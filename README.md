@@ -41,6 +41,10 @@ pip install -r requirements.txt
 
 **Python 3.10+ required.** Dependencies: `numpy`, `pyyaml`, `jinja2`, `matplotlib`, `fpdf2`.
 
+> **Windows note:** After `pip install`, use `python -m pytest`  (always use `python -m pytest` on Windows) rather than `pytest`
+> directly. On Windows, `pytest` may not be on the system PATH even after installation.
+> `python -m pytest`  (always use `python -m pytest` on Windows) always works regardless of PATH configuration.
+
 ---
 
 ## Quick start
@@ -66,14 +70,48 @@ All output is written to `output/<run_id>/` with datetime stamping:
 ```
 output/
 └── run_20260428_143022/
-    ├── cas.log           ← full debug log
-    ├── results.json      ← all simulation results
+    ├── cas.log           ← full debug log (always written)
+    ├── results.json      ← all simulation results (always written)
     ├── report.html       ← self-contained interactive report
-    ├── report.pdf        ← print-ready report
+    ├── report.pdf        ← print-ready report (if --report pdf)
     ├── car_matrix.csv    ← CAR table (if --report csv)
     ├── depletion.csv
     ├── marginal.csv
     └── run_manifest.json ← run metadata
+```
+
+> **Finding your log file:** the log is always at `output\<run_id>\cas.log`.
+> The `<run_id>` is printed to the console at the start of every run:
+> `INFO  CAS v1.1.0 | run_id=run_20260429_151311`
+> The file log captures DEBUG-level detail; the console shows INFO and above.
+> Use `--log-level DEBUG` to also see DEBUG output on the console.
+> Use `--output-dir` to change the base output folder.
+
+**Running the simulator — common commands:**
+```bash
+# Standard run (default 10,000 sims, 90-day horizon, $1B budget, HTML report)
+python -m cas
+
+# Quick test run (500 sims — fast, lower precision)
+python -m cas --n-sims 500
+
+# Full publication run (50,000 sims — slow, high precision)
+python -m cas --n-sims 50000 --report html,pdf,json,csv
+
+# List all weapon and threat systems, then exit
+python -m cas --list-systems
+
+# Custom budget and horizon
+python -m cas --budget 5.0 --horizon 60
+
+# Named scenario from simulation.yaml
+python -m cas --scenario two_war_surge
+
+# Debug mode — verbose console output
+python -m cas --n-sims 500 --log-level DEBUG
+
+# Custom weapon database
+python -m cas --weapon-config my_weapons.yaml
 ```
 
 ---
