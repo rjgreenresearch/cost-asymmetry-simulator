@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAS Report — {{ run_id }}</title>
+  <style>
+    :root {
+      --bg:       #1e1e2e;
+      --surface:  #313244;
+      --surface2: #252535;
+      --text:     #cdd6f4;
+      --subtext:  #a6adc8;
+      --blue:     #89b4fa;
+      --purple:   #cba6f7;
+      --green:    #a6e3a1;
+      --yellow:   #f9e2af;
+      --red:      #f38ba8;
+      --teal:     #94e2d5;
+      --border:   #45475a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      font-size: 14px; line-height: 1.6;
+    }
+    /* ── Layout ── */
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-bottom: 2px solid var(--purple);
+      padding: 2rem 3rem;
+    }
+    .header h1 { color: var(--purple); font-size: 1.6rem; margin-bottom: .3rem; }
+    .header .meta { color: var(--subtext); font-size: .82rem; }
+    .header .badge {
+      display: inline-block; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: .15rem .5rem; font-size: .75rem; margin-right: .4rem;
+    }
+    .toc {
+      background: var(--surface2); border-right: 2px solid var(--border);
+      padding: 1.5rem; min-width: 200px; position: sticky; top: 0;
+      max-height: 100vh; overflow-y: auto;
+    }
+    .toc h3 { color: var(--blue); font-size: .85rem; margin-bottom: .8rem; }
+    .toc a { color: var(--subtext); text-decoration: none; display: block;
+             font-size: .8rem; padding: .2rem 0; }
+    .toc a:hover { color: var(--text); }
+    .main { display: flex; }
+    .content { flex: 1; padding: 2rem 3rem; max-width: 1100px; }
+    /* ── Sections ── */
+    .section { margin-bottom: 3rem; }
+    .section h2 {
+      color: var(--blue); font-size: 1.1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: .4rem; margin-bottom: 1rem;
+    }
+    .section h3 { color: var(--teal); font-size: .95rem; margin: 1.2rem 0 .5rem; }
+    /* ── Charts ── */
+    .chart-container { margin: 1.2rem 0; }
+    .chart-container img {
+      max-width: 100%; border: 1px solid var(--border);
+      border-radius: 6px; display: block;
+    }
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; margin: .8rem 0 1.5rem; }
+    thead th {
+      background: var(--surface); color: var(--blue);
+      padding: .5rem .7rem; text-align: left; font-size: .8rem;
+      border-bottom: 2px solid var(--border);
+    }
+    tbody td { padding: .4rem .7rem; font-size: .8rem; border-bottom: 1px solid var(--surface); }
+    tbody tr:hover td { background: var(--surface2); }
+    .status-ACUTE_CRISIS   { color: #f38ba8; font-weight: 600; }
+    .status-CRITICAL       { color: #fab387; font-weight: 600; }
+    .status-HIGH_RISK      { color: #f9e2af; }
+    .status-MEDIUM_RISK    { color: #a6e3a1; }
+    .status-LOW_RISK       { color: #a6e3a1; }
+    .status-SELF_SUSTAINING{ color: #a6e3a1; font-weight: 600; }
+    .adv   { color: #f38ba8; }
+    .us    { color: #a6e3a1; }
+    .parity{ color: #f9e2af; }
+    /* ── Summary boxes ── */
+    .summary-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin: 1rem 0 1.5rem;
+    }
+    .summary-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 1rem;
+    }
+    .summary-card .value { font-size: 1.8rem; font-weight: 700; color: var(--purple); }
+    .summary-card .label { font-size: .78rem; color: var(--subtext); margin-top: .2rem; }
+    /* ── Key findings box ── */
+    .findings {
+      background: #16213e; border-left: 4px solid var(--purple);
+      border-radius: 0 6px 6px 0; padding: 1.2rem 1.5rem; margin: 1.2rem 0;
+    }
+    .findings h4 { color: var(--purple); margin-bottom: .6rem; font-size: .9rem; }
+    .findings ol { padding-left: 1.3rem; }
+    .findings li { margin-bottom: .4rem; font-size: .83rem; color: var(--text); }
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border); padding: 1rem 3rem;
+      font-size: .75rem; color: var(--subtext);
+    }
+    footer a { color: var(--blue); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Cost-Asymmetry Simulator — Run Report</h1>
+  <p class="meta">
+    <span class="badge">Run: {{ run_id }}</span>
+    <span class="badge">Generated: {{ generated_at }}</span>
+    <span class="badge">CAS v{{ version }}</span>
+    <span class="badge">Horizon: {{ horizon }} days</span>
+  </p>
+</div>
+
+<div class="main">
+  <nav class="toc">
+    <h3>Contents</h3>
+    <a href="#summary">Executive Summary</a>
+    <a href="#car">1. CAR Matrix</a>
+    <a href="#depletion">2. Two-War Depletion</a>
+    <a href="#mc">3. Monte Carlo</a>
+    <a href="#marginal">4. Marginal Value</a>
+    <a href="#portfolio">5. Portfolio</a>
+    <a href="#methodology">Methodology</a>
+  </nav>
+
+  <div class="content">
+
+    <!-- Executive Summary ─────────────────────────────────────────────────── -->
+    <section class="section" id="summary">
+      <h2>Executive Summary</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="value">{{ car_rows|length }}</div>
+          <div class="label">Threat/defender pairings analysed</div>
+        </div>
+        <div class="summary-card">
+          <div class="value">{{ depletion_rows|selectattr("status","in",["ACUTE_CRISIS","CRITICAL"])|list|length }}</div>
+          <div class="label">Systems in CRITICAL or ACUTE status</div>
+        </div>
+        <div class="summary-card">
+          <div class="value">{{ horizon }}</div>
+          <div class="label">Two-war horizon (days)</div>
+        </div>
+        <div class="summary-card">
+          <div class="value">${{ "%.1f"|format(portfolio.budget_B) }}B</div>
+          <div class="label">Portfolio optimisation budget</div>
+        </div>
+      </div>
+
+      <div class="findings">
+        <h4>Key Findings</h4>
+        <ol>
+          <li><strong>Structural CAR inversion:</strong> FPV drone ($500) vs PAC-3 MSE ($3.7M)
+              yields a 0.000135 CAR — adversaries force a 7,400:1 cost exchange. This is
+              fiscal attrition regardless of tactical outcome.</li>
+          <li><strong>All high-end interceptors deplete before day 90</strong> under two-war
+              stochastic demand. No system achieves the two-war standard at current inventories.</li>
+          <li><strong>Directed energy is the structural solution:</strong> Iron Beam at $2/shot
+              versus $3.7M PAC-3 yields a 1.85M:1 CAR in the US favour — permanently inverting
+              the cost curve for drones and rockets.</li>
+          <li><strong>Optimal marginal dollar</strong> goes to FPV drones and LUCAS for
+              coverage-days per dollar, but THAAD production surge is the highest-priority
+              irreplaceable scarcity gap.</li>
+          <li><strong>Quality discipline</strong> is non-negotiable at mass production scale:
+              a 25% dud rate (Russian Geran-2 observed rate) raises effective cost per strike
+              by 33% and erodes deterrence value proportionally.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- CAR Matrix ────────────────────────────────────────────────────────── -->
+    <section class="section" id="car">
+      <h2>1. Cost Asymmetry Ratio (CAR) Matrix</h2>
+      <p style="color:var(--subtext);font-size:.82rem;margin-bottom:.8rem">
+        CAR = adversary offensive cost ÷ US defensive response cost.
+        CAR &gt; 1 = US cost advantage. CAR &lt; 1 = adversary cost advantage.
+        Quality-adjusted CAR accounts for production failure (dud) rates on both sides.
+      </p>
+      <div class="chart-container">
+        <img src="data:image/png;base64,{{ charts.car }}" alt="CAR Matrix chart">
+      </div>
+      <table>
+        <thead><tr>
+          <th>Pairing</th><th>Threat $</th><th>Threat Dud%</th>
+          <th>Defense $</th><th>Defense Dud%</th>
+          <th>CAR (raw)</th><th>CAR (adj)</th><th>Status</th>
+        </tr></thead>
+        <tbody>
+          {% for r in car_rows %}
+          <tr>
+            <td>{{ r.label }}</td>
+            <td>${{ "{:,}".format(r.threat_cost) }}</td>
+            <td>{{ r.threat_dud_pct }}%</td>
+            <td>${{ "{:,}".format(r.defend_cost) }}</td>
+            <td>{{ r.defend_dud_pct }}%</td>
+            <td>{{ "%.4f"|format(r.CAR_raw) }}</td>
+            <td>{{ "%.4f"|format(r.CAR_adj) }}</td>
+            <td class="{{ {'ADV_ADVANTAGE':'adv','US_ADVANTAGE':'us','PARITY':'parity'}.get(r.interpretation,'') }}">
+              {{ r.interpretation.replace('_',' ') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Two-War Depletion ─────────────────────────────────────────────────── -->
+    <section class="section" id="depletion">
+      <h2>2. Deterministic Two-War Inventory Depletion</h2>
+      <p style="color:var(--subtext);font-size:.82rem;margin-bottom:.8rem">
+        Net daily draw = theater 1 + theater 2 consumption − daily production.
+        Days-to-zero computed at mean consumption rates.
+        See Section 3 for Monte Carlo (stochastic) results.
+      </p>
+      <div class="chart-container">
+        <img src="data:image/png;base64,{{ charts.depletion }}" alt="Depletion chart">
+      </div>
+      <table>
+        <thead><tr>
+          <th>System</th><th>Tier</th><th>Inventory</th><th>Value ($B)</th>
+          <th>Daily Cons.</th><th>Daily Prod.</th><th>Days → 0</th>
+          <th>@ Horizon</th><th>Status</th>
+        </tr></thead>
+        <tbody>
+          {% for r in depletion_rows %}
+          <tr>
+            <td>{{ r.system }}</td>
+            <td>{{ r.tier }}</td>
+            <td>{{ "{:,}".format(r.inventory) }}</td>
+            <td>${{ r.inventory_value_B }}B</td>
+            <td>{{ r.daily_consumption }}</td>
+            <td>{{ r.daily_production }}</td>
+            <td>{{ r.days_to_zero }}</td>
+            <td>{{ r.pct_at_horizon }}%</td>
+            <td class="status-{{ r.status }}">{{ r.status.replace('_',' ') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Monte Carlo ───────────────────────────────────────────────────────── -->
+    <section class="section" id="mc">
+      <h2>3. Monte Carlo Coverage Distribution</h2>
+      <p style="color:var(--subtext);font-size:.82rem;margin-bottom:.8rem">
+        N = {{ mc_coverage.values()|first|attr('n_simulations') if mc_coverage else '—' }} simulations per system.
+        Demand sampled from Negative Binomial (accommodates overdispersion / burstiness).
+        Inter-theater demand correlation applied.
+        IQR shows P25–P75 spread.
+      </p>
+      <div class="chart-container">
+        <img src="data:image/png;base64,{{ charts.mc }}" alt="MC coverage chart">
+      </div>
+      <table>
+        <thead><tr>
+          <th>System</th><th>Quality</th><th>Dud %</th>
+          <th>P(coverage)</th><th>Median Days</th>
+          <th>P25–P75 Days</th><th>P5–P95 Days</th>
+        </tr></thead>
+        <tbody>
+          {% for sys, r in mc_coverage.items() %}
+          <tr>
+            <td>{{ sys }}</td>
+            <td>{{ r.quality_tier }}</td>
+            <td>{{ r.dud_rate_pct }}%</td>
+            <td>{{ "%.1f%%"|format(r.get('P_coverage',0)*100) }}</td>
+            <td>{{ r.get('median_days','—') }}</td>
+            <td>{{ r.get('p25_days','—') }}–{{ r.get('p75_days','—') }}</td>
+            <td>{{ r.get('p10_days','—') }}–{{ r.get('p90_days','—') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Marginal Value ────────────────────────────────────────────────────── -->
+    <section class="section" id="marginal">
+      <h2>4. Marginal Value — Coverage-Days per Dollar</h2>
+      <p style="color:var(--subtext);font-size:.82rem;margin-bottom:.8rem">
+        Coverage-days gained per $100M and $1B investment, ranked by best ROI.
+        Reflects the Dyna-METRIC principle: optimise for readiness per dollar,
+        not capability per dollar.
+      </p>
+      <div class="chart-container">
+        <img src="data:image/png;base64,{{ charts.marginal }}" alt="Marginal value chart">
+      </div>
+      <table>
+        <thead><tr>
+          <th>System</th><th>Tier</th><th>Unit Cost</th>
+          <th>Quality</th><th>Dud %</th>
+          <th>Days / $100M</th><th>Days / $1B</th>
+        </tr></thead>
+        <tbody>
+          {% for r in marginal_rows %}
+          <tr>
+            <td>{{ r.system }}</td>
+            <td>{{ r.tier }}</td>
+            <td>${{ "{:,}".format(r.unit_cost) }}</td>
+            <td>{{ r.quality }}</td>
+            <td>{{ r.dud_pct }}%</td>
+            <td>{{ r.get('days_per_100M','—') }}</td>
+            <td>{{ r.get('days_per_1000M','—') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Portfolio ─────────────────────────────────────────────────────────── -->
+    <section class="section" id="portfolio">
+      <h2>5. Portfolio Optimisation (${{ "%.1f"|format(portfolio.budget_B) }}B)</h2>
+      <p style="color:var(--subtext);font-size:.82rem;margin-bottom:.8rem">
+        Greedy marginal-value algorithm allocates the budget to maximise minimum
+        median days-of-coverage across the interceptor portfolio.
+        Step size: ${{ portfolio.step_M }}M per round. Rounds: {{ portfolio.rounds }}.
+        Unspent: ${{ portfolio.unspent_M }}M.
+      </p>
+      <table>
+        <thead><tr>
+          <th>System</th><th>Allocated</th><th>Final Median Days</th><th>Rationale</th>
+        </tr></thead>
+        <tbody>
+          {% for sys, alloc in portfolio.allocation_M.items() %}
+          <tr>
+            <td>{{ sys }}</td>
+            <td>${{ "%.0f"|format(alloc) }}M</td>
+            <td>{{ "%.0f"|format(portfolio.final_days.get(sys, 0)) }}</td>
+            <td style="font-size:.75rem;color:var(--subtext)">
+              {{ portfolio.rationale.get(sys, ['—'])|join(' | ') }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Methodology ───────────────────────────────────────────────────────── -->
+    <section class="section" id="methodology">
+      <h2>Methodology Notes</h2>
+      <h3>Cost Asymmetry Ratio</h3>
+      <p style="font-size:.82rem;color:var(--subtext)">
+        CAR = (adversary unit cost) / (US defensive response cost).
+        Quality-adjusted CAR = (adversary effective cost) / (US effective cost),
+        where effective cost = unit cost / (1 − dud rate).
+        Sources: CRS, CSIS Missile Defense Project, SAR FY2025/2026, CENTCOM, DoD budget docs.
+      </p>
+      <h3>Monte Carlo Demand Model</h3>
+      <p style="font-size:.82rem;color:var(--subtext)">
+        Daily demand sampled from Negative Binomial(r, p) where r and p are calibrated
+        from mean and coefficient of variation (CV). NB accommodates overdispersion
+        (combat demand is bursty relative to a Poisson process).
+        Adapted from Dyna-METRIC (Sherbrooke 1968; RAND R-1872-AF).
+        Inter-theater correlation applied via proportional mu adjustment.
+      </p>
+      <h3>Portfolio Optimisation</h3>
+      <p style="font-size:.82rem;color:var(--subtext)">
+        Greedy marginal-value algorithm; not guaranteed globally optimal but tractable
+        and interpretable. Each ${{ portfolio.step_M }}M step allocated to the system
+        with highest marginal gain in median days-of-coverage.
+      </p>
+      <h3>Data Sources</h3>
+      <p style="font-size:.82rem;color:var(--subtext)">
+        All cost and inventory data from publicly available US government documents.
+        See config/weapon_systems.yaml and config/threat_systems.yaml for per-system
+        source citations. No classified data used.
+      </p>
+    </section>
+
+  </div><!-- .content -->
+</div><!-- .main -->
+
+<footer>
+  <p>
+    Cost-Asymmetry Simulator v{{ version }} | Paper 6: The Cost Curve as Deterrent |
+    MTS Pillar 3 | Robert J. Green, rjgreenresearch.org |
+    Apache 2.0 — <a href="https://github.com/rjgreenresearch">github.com/rjgreenresearch</a>
+  </p>
+</footer>
+</body>
+</html>

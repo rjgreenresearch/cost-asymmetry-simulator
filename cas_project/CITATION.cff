@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "Cost-Asymmetry Simulator (CAS)"
+version: 1.1.0
+date-released: 2026-04-28
+authors:
+  - family-names: Green
+    given-names: Robert J.
+    orcid: https://orcid.org/0009-0002-9097-1021
+    email: robert@rjgreenresearch.org
+    affiliation: Independent Researcher
+license: Apache-2.0
+repository-code: https://github.com/rjgreenresearch/cost-asymmetry-simulator
+keywords:
+  - defence economics
+  - cost asymmetry
+  - munitions inventory
+  - Monte Carlo simulation
+  - Dyna-METRIC
+  - military readiness
+  - deterrence
+  - mutual threshold saturation
+abstract: >
+  Monte Carlo inventory optimisation simulator for U.S. military munitions,
+  implementing the Dyna-METRIC readiness-based sparing framework adapted for
+  consumable weapons systems. Models Cost Asymmetry Ratios, two-war depletion
+  timelines, and marginal-value portfolio allocation. Companion software for
+  Paper 6 of the Mutual Threshold Saturation (MTS) research programme.
+references:
+  - type: article
+    authors:
+      - family-names: Green
+        given-names: Robert J.
+    title: "The Cost Curve as Deterrent: Compound Warfare Economics, Saturation Dynamics, and the Structural Unaffordability of Great-Power Conflict"
+    journal: "International Security (forthcoming)"
+    year: 2026
