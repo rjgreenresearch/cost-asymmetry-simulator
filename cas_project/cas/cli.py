@@ -72,6 +72,27 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="FRACTION",
         help="Production surge fraction for readiness runs (e.g. 0.5 = +50%%; default: 0.0).",
     )
+    sim.add_argument(
+        "--cap-tier", type=str, default=None,
+        metavar="TIER:FRACTION",
+        help=(
+            "Override allocation cap for one tier (e.g. INFANTRY_CUAS:0.05). "
+            "Can be specified multiple times. "
+            "Fractions are 0.0–1.0; use 1.0 to disable a cap. "
+            "Example: --cap-tier STRATEGIC:0.60 --cap-tier INFANTRY_CUAS:0.05"
+        ),
+        action="append",
+        dest="cap_tiers",
+    )
+    sim.add_argument(
+        "--cap-system", type=float, default=None,
+        metavar="FRACTION",
+        help=(
+            "Override the per-system allocation cap (default: from simulation.yaml). "
+            "No single system will receive more than this fraction of total budget. "
+            "Example: --cap-system 0.20"
+        ),
+    )
 
     # ── Configuration overrides ───────────────────────────────────────────────
     cfg = p.add_argument_group("Configuration overrides")
@@ -236,6 +257,29 @@ def main(argv=None) -> int:
 
         log.info("Running Monte Carlo (n=%d, horizon=%d)...", cfg.n_sims, horizon)
         mc_results = run_full_mc(cfg, horizon)
+
+        # Apply any CLI cap overrides into cfg.portfolio_caps
+        if args.cap_tiers:
+            for item in args.cap_tiers:
+                try:
+                    tier, frac_str = item.split(":", 1)
+                    frac = float(frac_str)
+                    if not 0.0 <= frac <= 1.0:
+                        raise ValueError(f"Fraction must be 0.0–1.0, got {frac}")
+                    cfg.portfolio_caps[tier.strip().upper()] = frac
+                    log.info("CLI cap override: %s → %.0f%%",
+                             tier.strip().upper(), frac * 100)
+                except (ValueError, AttributeError) as exc:
+                    log.warning("Invalid --cap-tier value '%s': %s", item, exc)
+
+        if args.cap_system is not None:
+            if 0.0 <= args.cap_system <= 1.0:
+                cfg.portfolio_caps["_per_system"] = args.cap_system
+                log.info("CLI per-system cap override: %.0f%%",
+                         args.cap_system * 100)
+            else:
+                log.warning("--cap-system %.2f out of range [0,1]; ignored",
+                            args.cap_system)
 
         log.info("Running portfolio optimisation (budget=$%.1fB)...", args.budget)
         portfolio = optimise_portfolio(cfg, args.budget, horizon)

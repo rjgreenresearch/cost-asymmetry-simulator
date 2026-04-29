@@ -19,6 +19,20 @@ targets:
   budget_step_M: 100            # $M increments for greedy optimiser
   max_optimiser_rounds: 100     # Safety ceiling on optimiser iterations
 
+  # Portfolio allocation caps by tier — maximum fraction of total budget
+  # any single tier can receive. Prevents the optimiser from spending
+  # all available funds on the cheapest system regardless of strategy.
+  # Set to 1.0 to disable a cap. All values must be between 0.0 and 1.0.
+  portfolio_caps:
+    STRATEGIC:           0.50   # THAAD, SM-3 IIA — max 50% of budget
+    OPERATIONAL:         0.40   # PAC-3, SM-2, SM-6 — max 40%
+    PRECISION_STRIKE:    0.30   # Tomahawk, JASSM-ER — max 30%
+    ATTRITION_OFFENSE:   0.25   # LUCAS, FPV, Switchblade — max 25%
+    ATTRITION_DEFENSE:   0.20   # DroneHunter — max 20%
+    INFANTRY_CUAS:       0.20   # Skynet, DroneRound — max 20%
+    STRUCTURAL_SOLUTION: 1.00   # DEW systems — no cap (always highest priority)
+    _per_system:         0.30   # No single system > 30% regardless of tier
+
 output:
   formats:                      # Report output formats
     - html

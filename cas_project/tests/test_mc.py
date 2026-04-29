@@ -145,9 +145,11 @@ def test_coverage_iqr_ordering(cfg_fast):
 
 def test_portfolio_returns_dict(cfg_fast):
     result = optimise_portfolio(cfg_fast, budget_B=0.5, horizon_days=60)
-    assert "allocation_M" in result
-    assert "final_days" in result
-    assert "unspent_M" in result
+    assert "allocation_M"  in result
+    assert "final_days"    in result
+    assert "unspent_M"     in result
+    assert "caps_hit"      in result
+    assert "tier_spent_M"  in result
 
 
 def test_portfolio_allocation_non_negative(cfg_fast):
@@ -158,13 +160,47 @@ def test_portfolio_allocation_non_negative(cfg_fast):
 
 
 def test_portfolio_total_spend_within_budget(cfg_fast):
-    """Total allocated + unspent <= budget."""
+    """Total allocated + unspent == budget (caps may leave money unspent)."""
     budget_M = 500
     result = optimise_portfolio(cfg_fast, budget_B=0.5, horizon_days=60)
-    total = sum(result["allocation_M"].values()) + result["unspent_M"]
+    allocated = sum(result["allocation_M"].values())
+    total = allocated + result["unspent_M"]
     assert abs(total - budget_M) < 1, (
-        f"Budget accounting error: allocated+unspent={total:.1f}M != {budget_M}M"
+        f"Budget accounting error: allocated({allocated:.1f}M) + "
+        f"unspent({result['unspent_M']:.1f}M) = {total:.1f}M != {budget_M}M"
     )
+    # Allocated <= budget (caps may leave some unspent)
+    assert allocated <= budget_M + 0.01, (
+        f"Over-allocated: {allocated:.1f}M > budget {budget_M}M"
+    )
+
+
+def test_portfolio_tier_caps_respected(cfg_fast):
+    """No tier receives more than its configured cap fraction of total budget."""
+    from cas.mc_simulator import _resolve_caps
+    budget_B = 1.0
+    result = optimise_portfolio(cfg_fast, budget_B=budget_B, horizon_days=60)
+    tier_caps_frac, per_sys_frac = _resolve_caps(cfg_fast)
+    budget_M = budget_B * 1000
+    tier_spent = result.get("tier_spent_M", {})
+    for tier, spent_M in tier_spent.items():
+        cap_M = tier_caps_frac.get(tier, 1.0) * budget_M
+        assert spent_M <= cap_M + 0.01, (
+            f"Tier {tier} spent ${spent_M:.0f}M > cap ${cap_M:.0f}M"
+        )
+
+
+def test_portfolio_per_system_cap_respected(cfg_fast):
+    """No single system receives more than the per-system cap."""
+    from cas.mc_simulator import _resolve_caps
+    budget_B = 1.0
+    result = optimise_portfolio(cfg_fast, budget_B=budget_B, horizon_days=60)
+    _, per_sys_frac = _resolve_caps(cfg_fast)
+    per_sys_cap_M = budget_B * 1000 * per_sys_frac
+    for sys, alloc_M in result["allocation_M"].items():
+        assert alloc_M <= per_sys_cap_M + 0.01, (
+            f"{sys}: ${alloc_M:.0f}M > per-system cap ${per_sys_cap_M:.0f}M"
+        )
 
 
 def test_portfolio_zero_budget(cfg_fast):
@@ -175,6 +211,43 @@ def test_portfolio_zero_budget(cfg_fast):
 
 
 # ── run_full_mc ───────────────────────────────────────────────────────────────
+
+def test_portfolio_infantry_cap_respected(cfg_fast):
+    """INFANTRY_CUAS systems must not exceed 10% of budget."""
+    budget_B = 1.0
+    result = optimise_portfolio(cfg_fast, budget_B=budget_B, horizon_days=60)
+    budget_M = budget_B * 1000
+    infantry_max_M = budget_M * 0.10
+    infantry_systems = [
+        s for s, ws in cfg_fast.weapons.items()
+        if ws.get("tier") == "INFANTRY_CUAS"
+    ]
+    infantry_total = sum(
+        result["allocation_M"].get(s, 0) for s in infantry_systems
+    )
+    assert infantry_total <= infantry_max_M + 1, (
+        f"INFANTRY_CUAS allocation ${infantry_total:.0f}M exceeds "
+        f"10% cap ${infantry_max_M:.0f}M"
+    )
+
+
+def test_portfolio_per_system_cap_respected(cfg_fast):
+    """No single system may exceed 25% of total budget."""
+    budget_B = 1.0
+    result = optimise_portfolio(cfg_fast, budget_B=budget_B, horizon_days=60)
+    per_sys_max_M = budget_B * 1000 * 0.25
+    for sys, alloc in result["allocation_M"].items():
+        assert alloc <= per_sys_max_M + 1, (
+            f"{sys}: allocation ${alloc:.0f}M exceeds "
+            f"25% per-system cap ${per_sys_max_M:.0f}M"
+        )
+
+
+def test_portfolio_caps_hit_is_list(cfg_fast):
+    """caps_hit is a list (may be empty if budget too small to trigger caps)."""
+    result = optimise_portfolio(cfg_fast, budget_B=0.1, horizon_days=60)
+    assert isinstance(result["caps_hit"], list)
+
 
 def test_run_full_mc_structure(cfg_fast):
     """run_full_mc returns dict with 'readiness' and 'coverage' keys."""

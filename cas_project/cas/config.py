@@ -101,6 +101,7 @@ class Config:
         self.theater_correlation = self._sim["simulation"]["theater_correlation"]
         self.horizons            = self._sim["horizons"]
         self.targets             = self._sim["targets"]
+        self.portfolio_caps      = self._sim["targets"].get("portfolio_caps", {})
         self.scenarios           = self._sim.get("scenarios", {})
         self.output_cfg          = self._sim.get("output", {})
         self.logging_cfg         = self._sim.get("logging", {})
@@ -124,6 +125,13 @@ class Config:
     def horizon(self, name: str = "long") -> int:
         """Return a named horizon in days (short/medium/long/extended)."""
         return self.horizons.get(name, 90)
+
+    def tier_cap(self, tier: str) -> float:
+        """
+        Return the maximum budget fraction allowed for a given tier.
+        Returns 1.0 (no cap) if the tier is not configured.
+        """
+        return float(self.portfolio_caps.get(tier, 1.0))
 
     def consumable_systems(self) -> dict:
         """Return only weapon systems that have consumption_rates defined."""
