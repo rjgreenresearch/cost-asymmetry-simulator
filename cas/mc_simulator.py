@@ -192,6 +192,38 @@ def days_coverage_distribution(
 # minimum days-of-coverage across the critical interceptor portfolio.
 # ─────────────────────────────────────────────────────────────────────────────
 
+# ── Allocation caps by tier — prevents unrealistic concentration ─────────────
+# No responsible defence planner would allocate 90% of a $1B budget to
+# shotgun shells. These caps enforce portfolio diversification by tier
+# Cap defaults — used when simulation.yaml does not define portfolio_caps.
+# These are overridden by config/simulation.yaml → targets.portfolio_caps.
+# To disable a cap for a tier, set its value to 1.0 in simulation.yaml.
+_DEFAULT_TIER_CAPS: dict[str, float] = {
+    "STRATEGIC":           0.50,   # THAAD, SM-3: max 50%
+    "OPERATIONAL":         0.40,   # PAC-3, SM-2, SM-6: max 40%
+    "PRECISION_STRIKE":    0.30,   # Tomahawk, JASSM-ER: max 30%
+    "ATTRITION_OFFENSE":   0.25,   # LUCAS, FPV, Switchblade: max 25%
+    "ATTRITION_DEFENSE":   0.20,   # DroneHunter: max 20%
+    "INFANTRY_CUAS":       0.20,   # Skynet, DroneRound: max 20%
+    "STRUCTURAL_SOLUTION": 1.00,   # DEW: no cap (always highest priority)
+}
+_DEFAULT_PER_SYSTEM_CAP = 0.30    # no single system > 30% of total budget
+
+
+def _resolve_caps(cfg: Config) -> tuple[dict[str, float], float]:
+    """
+    Load tier caps from simulation.yaml (targets.portfolio_caps) if present,
+    falling back to _DEFAULT_TIER_CAPS. Returns (tier_cap_dict, per_system_cap).
+    Both are expressed as fractions of total budget (0.0 – 1.0).
+    """
+    yaml_caps = cfg.portfolio_caps  # populated from simulation.yaml
+    tier_caps = {}
+    for tier, default in _DEFAULT_TIER_CAPS.items():
+        tier_caps[tier] = float(yaml_caps.get(tier, default))
+    per_sys = float(yaml_caps.get("_per_system", _DEFAULT_PER_SYSTEM_CAP))
+    return tier_caps, per_sys
+
+
 def optimise_portfolio(
     cfg: Config,
     budget_B: float = 1.0,
@@ -200,42 +232,81 @@ def optimise_portfolio(
 ) -> dict:
     """
     Allocate `budget_B` billion dollars across `systems` to maximise the
-    minimum median days-of-coverage using a greedy marginal-value algorithm.
+    minimum median days-of-coverage using a greedy marginal-value algorithm
+    subject to tier-level and per-system allocation caps.
 
-    The greedy algorithm is not guaranteed globally optimal but is:
-      (a) tractable for real-time computation
-      (b) interpretable for academic and policy audiences
-      (c) consistent with the Dyna-METRIC approach to readiness sparing
+    Caps prevent unrealistic concentration (e.g. 90% of budget into shotgun
+    shells) while preserving the greedy marginal-value logic. Caps reflect
+    real defence procurement constraints: strategic interceptors are capacity-
+    limited; infantry munitions are last-resort, not primary investment.
+
+    Tier caps (_TIER_CAP_PCT):
+      STRATEGIC          40% — THAAD, SM-3: scarcity limits absorption
+      OPERATIONAL        30% — PAC-3, SM-2, SM-6
+      PRECISION_STRIKE   25% — Tomahawk, JASSM-ER
+      ATTRITION_OFFENSE  20% — LUCAS, FPV drones
+      STRUCTURAL_SOLUTION 20% — DEW systems
+      ATTRITION_DEFENSE  15% — DroneHunter
+      INFANTRY_CUAS      10% — Skynet shells, Drone Rounds
+
+    Per-system cap: no single system > 25% of total budget.
 
     Parameters
     ----------
-    systems : list of system keys to consider, or None (uses all consumables)
+    systems : list of system keys, or None (all consumable systems)
 
     Returns
     -------
-    dict with allocation_M, final_median_days, rationale per system
+    dict with allocation_M, final_median_days, rationale, caps_applied
     """
     if systems is None:
-        systems = [k for k in cfg.consumable_systems()
-                   if cfg.weapons[k].get("type") not in
-                   ("one_way_attack_drone", "fpv_attack_drone",
-                    "c_uas_interceptor_drone")]  # focus on interceptors
+        systems = list(cfg.consumable_systems().keys())
 
     step_M    = cfg.targets.get("budget_step_M", 100)
     budget_M  = budget_B * 1000
     remaining = budget_M
 
-    # Working inventory augments per system
-    augments  = {s: 0 for s in systems}
+    # Resolve caps from config (YAML overrides defaults)
+    tier_caps_frac, per_sys_frac = _resolve_caps(cfg)
+    tier_cap_M:   dict[str, float] = {t: budget_M * f
+                                       for t, f in tier_caps_frac.items()}
+    per_sys_cap_M = budget_M * per_sys_frac
+    log.debug("Resolved tier caps: %s",
+              {t: f"${v:.0f}M ({tier_caps_frac[t]:.0%})"
+               for t, v in tier_cap_M.items()})
+    log.debug("Per-system cap: $%.0fM (%.0f%%)", per_sys_cap_M, per_sys_frac*100)
+
+    # Track allocation per system and per tier
+    augments   = {s: 0 for s in systems}
     allocation = {s: 0.0 for s in systems}
+    tier_spent: dict[str, float] = {}
     rationale  = {s: [] for s in systems}
+    caps_hit   = []
 
-    def _baseline(s):
+    def _tier(s: str) -> str:
+        return cfg.weapons[s].get("tier", "OPERATIONAL")
+
+    def _baseline(s: str) -> float:
         r = days_coverage_distribution(cfg, s, extra_units=augments[s])
-        return r.get("median_days", 0)
+        return r.get("median_days", 0.0)
 
-    log.info("Portfolio optimisation: budget=$%.0fB  step=$%dM  systems=%s",
-             budget_B, step_M, systems)
+    def _at_cap(s: str) -> bool:
+        """True if this system or its tier has hit its allocation cap."""
+        if allocation[s] + step_M > per_sys_cap_M:
+            return True
+        t = _tier(s)
+        if t in tier_cap_M:
+            spent = tier_spent.get(t, 0.0)
+            if spent + step_M > tier_cap_M[t]:
+                return True
+        return False
+
+    log.info(
+        "Portfolio optimisation: budget=$%.0fB  step=$%dM  "
+        "per_sys_cap=$%.0fM  systems=%s",
+        budget_B, step_M, per_sys_cap_M, systems,
+    )
+    log.debug("Tier caps: %s", {k: f"${v:.0f}M" for k, v in tier_cap_M.items()})
 
     rounds = 0
     max_rounds = cfg.targets.get("max_optimiser_rounds", 100)
@@ -245,6 +316,9 @@ def optimise_portfolio(
         best_gain = -1.0
 
         for sys in systems:
+            if _at_cap(sys):
+                continue                     # skip capped systems
+
             ws        = cfg.weapons[sys]
             unit_cost = ws.get("unit_cost", ws.get("unit_cost_per_shot", 1))
             if unit_cost <= 0:
@@ -253,42 +327,69 @@ def optimise_portfolio(
             if units == 0:
                 continue
 
-            base   = _baseline(sys)
+            base = _baseline(sys)
             augments[sys] += units
             augmented = _baseline(sys)
             augments[sys] -= units
 
             gain = augmented - base
             if gain > best_gain:
-                best_gain = gain
-                best_sys  = sys
+                best_gain  = gain
+                best_sys   = sys
                 best_units = units
 
         if best_sys is None or best_gain <= 0:
-            log.info("Optimiser converged at round %d; no further gains", rounds)
+            log.info("Optimiser converged at round %d (no uncapped gains)", rounds)
             break
 
+        # Apply allocation
         augments[best_sys]   += best_units
         allocation[best_sys] += step_M
+        tier = _tier(best_sys)
+        tier_spent[tier]      = tier_spent.get(tier, 0.0) + step_M
         remaining            -= step_M
         new_median            = _baseline(best_sys)
+
+        # Check if cap newly triggered
+        if _at_cap(best_sys):
+            cap_msg = (
+                f"{best_sys} reached per-system cap "
+                f"(${allocation[best_sys]:.0f}M / ${per_sys_cap_M:.0f}M)"
+                if allocation[best_sys] >= per_sys_cap_M
+                else f"{tier} tier reached cap "
+                     f"(${tier_spent[tier]:.0f}M / ${tier_cap_M.get(tier,0):.0f}M)"
+            )
+            caps_hit.append(cap_msg)
+            log.info("Cap reached: %s", cap_msg)
+
         rationale[best_sys].append(
-            f"+${step_M}M → +{best_units} units → median {new_median:.0f} days"
+            f"+${step_M}M → +{best_units:,} units → median {new_median:.0f} days"
         )
-        log.debug("Round %d: allocate $%dM to %s (+%d units, gain=%.1f days)",
-                  rounds, step_M, best_sys, best_units, best_gain)
+        log.debug(
+            "Round %d: $%dM → %s (+%d units, +%.1f days) "
+            "[tier %s: $%.0fM spent]",
+            rounds, step_M, best_sys, best_units, best_gain,
+            tier, tier_spent.get(tier, 0),
+        )
         rounds += 1
 
-    # Final coverage profile
     final_days = {s: round(_baseline(s), 1) for s in systems}
+
+    log.info(
+        "Portfolio complete: %d rounds, $%.0fM allocated, $%.0fM unspent, "
+        "%d caps triggered",
+        rounds, budget_M - remaining, remaining, len(caps_hit),
+    )
 
     return {
         "budget_B":       budget_B,
         "step_M":         step_M,
         "rounds":         rounds,
         "allocation_M":   allocation,
+        "tier_spent_M":   tier_spent,
         "final_days":     final_days,
         "rationale":      rationale,
+        "caps_hit":       caps_hit,
         "unspent_M":      remaining,
     }
 
