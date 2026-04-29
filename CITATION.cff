@@ -1,79 +1,36 @@
 cff-version: 1.2.0
-title: "Cost Asymmetry Simulator: Compound Warfare Economics Modeling Tool"
-message: "If you use this software, please cite both the software and the companion paper."
-type: software
+message: "If you use this software, please cite it using the metadata below."
+title: "Cost-Asymmetry Simulator (CAS)"
+version: 1.1.0
+date-released: 2026-04-28
 authors:
-  - given-names: Robert
-    family-names: Green
-    name-suffix: J.
-    orcid: "https://orcid.org/0009-0002-9097-1021"
-    affiliation: "Independent Researcher"
-    city: "Melbourne"
-    region: "Florida"
-    country: "US"
-repository-code: "https://github.com/rjgreenresearch/cost-asymmetry-simulator"
-url: "https://rjgreenresearch.org"
+  - family-names: Green
+    given-names: Robert J.
+    orcid: https://orcid.org/0009-0002-9097-1021
+    email: robert@rjgreenresearch.org
+    affiliation: Independent Researcher
 license: Apache-2.0
-version: "0.1.0"
-date-released: "2026-04-18"
+repository-code: https://github.com/rjgreenresearch/cost-asymmetry-simulator
 keywords:
+  - defence economics
   - cost asymmetry
-  - warfare economics
+  - munitions inventory
+  - Monte Carlo simulation
+  - Dyna-METRIC
+  - military readiness
   - deterrence
-  - defense economics
-  - offense-defense balance
-  - drone warfare
   - mutual threshold saturation
-  - simulation
-abstract: >-
-  Simulation tool for modeling compound warfare cost dynamics across
-  five domains: offense-defense cost imbalance, attrition-replacement
-  disparity, industrial tempo mismatch, economic cascade costs, and
-  reconstruction burden. Computes the Cost Asymmetry Ratio (CAR),
-  simulates engagement cost exchanges, and evaluates compound
-  deterrence stability. Implements the third pillar of the Mutual
-  Threshold Saturation (MTS) unified deterrence architecture.
+abstract: >
+  Monte Carlo inventory optimisation simulator for U.S. military munitions,
+  implementing the Dyna-METRIC readiness-based sparing framework adapted for
+  consumable weapons systems. Models Cost Asymmetry Ratios, two-war depletion
+  timelines, and marginal-value portfolio allocation. Companion software for
+  Paper 6 of the Mutual Threshold Saturation (MTS) research programme.
 references:
   - type: article
-    title: >-
-      The Cost Curve as Deterrent: Compound Warfare Economics,
-      Saturation Dynamics, and the Structural Unaffordability
-      of Great-Power Conflict
     authors:
-      - given-names: Robert
-        family-names: Green
-        name-suffix: J.
+      - family-names: Green
+        given-names: Robert J.
+    title: "The Cost Curve as Deterrent: Compound Warfare Economics, Saturation Dynamics, and the Structural Unaffordability of Great-Power Conflict"
+    journal: "International Security (forthcoming)"
     year: 2026
-    journal: "International Security"
-    status: "in preparation"
-    notes: "Companion paper for this software"
-  - type: article
-    title: >-
-      Mapping Critical Supply Chain Dependencies Affecting the
-      United States: A Compound Vulnerability Analysis Across
-      Seven Critical Sectors
-    authors:
-      - given-names: Robert
-        family-names: Green
-        name-suffix: J.
-    year: 2026
-    doi: "10.2139/ssrn.6454618"
-    notes: "Paper 4 — Material MTS (Pillar 1)"
-  - type: software
-    title: "MTS Doctrine Simulator"
-    authors:
-      - given-names: Robert
-        family-names: Green
-        name-suffix: J.
-    repository-code: "https://github.com/rjgreenresearch/mts-doctrine-simulator"
-    license: Apache-2.0
-    notes: "Companion tool for Material MTS (Pillar 1)"
-  - type: software
-    title: "HCTS Simulator"
-    authors:
-      - given-names: Robert
-        family-names: Green
-        name-suffix: J.
-    repository-code: "https://github.com/rjgreenresearch/hcts-simulator"
-    license: Apache-2.0
-    notes: "Companion tool for Human Capital MTS (Pillar 2)"

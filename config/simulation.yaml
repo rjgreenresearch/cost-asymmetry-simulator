@@ -1,0 +1,63 @@
+# Simulation Parameters Configuration
+version: "1.0"
+last_updated: "2026-04-28"
+
+simulation:
+  n_simulations: 10000      # Monte Carlo iterations; 5000 for quick, 50000 for publication
+  random_seed: 20260428     # Set to null for random seed each run
+  theater_correlation: 0.35 # Inter-theater demand correlation (0=independent, 1=fully correlated)
+  demand_distribution: "negative_binomial"  # options: negative_binomial, poisson, normal
+
+horizons:
+  short:  30    # days — immediate readiness check
+  medium: 60    # days — campaign sustainability
+  long:   90    # days — two-war standard
+  extended: 180 # days — extended conflict
+
+targets:
+  readiness_probability: 0.90   # P(coverage) target for portfolio optimisation
+  budget_step_M: 100            # $M increments for greedy optimiser
+  max_optimiser_rounds: 100     # Safety ceiling on optimiser iterations
+
+output:
+  formats:                      # Report output formats
+    - html
+    - json
+  timestamp_format: "%Y%m%d_%H%M%S"
+  precision_decimals: 4
+  include_raw_simulations: false # Set true to export full MC sample arrays (large files)
+
+logging:
+  level: INFO                   # DEBUG, INFO, WARNING, ERROR
+  file_level: DEBUG             # More verbose to file than console
+  max_bytes: 10485760           # 10MB log rotation
+  backup_count: 5
+
+scenarios:
+  two_war_baseline:
+    description: "Simultaneous Middle East + Indo-Pacific high-intensity conflict"
+    theater_1: Middle_East
+    theater_2: Indo_Pacific
+    horizon_days: 90
+    production_surge_pct: 0.0
+
+  two_war_surge:
+    description: "Two-war with emergency production surge (+50%)"
+    theater_1: Middle_East
+    theater_2: Indo_Pacific
+    horizon_days: 90
+    production_surge_pct: 0.50
+
+  single_war_extended:
+    description: "Single theater extended campaign (180 days)"
+    theater_1: Middle_East
+    theater_2: null
+    horizon_days: 180
+    production_surge_pct: 0.0
+
+  deterrence_optimal:
+    description: "Peacetime deterrence posture — focus on CAR and signalling"
+    theater_1: null
+    theater_2: null
+    horizon_days: 365
+    production_surge_pct: 0.0

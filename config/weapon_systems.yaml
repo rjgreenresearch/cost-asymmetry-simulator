@@ -1,0 +1,413 @@
+# Weapon Systems Configuration
+# Cost-Asymmetry Simulator (CAS) — Paper 6: The Cost Curve as Deterrent
+# All costs in USD. Inventory figures from open-source estimates as of April 2026.
+# Sources: CRS, CSIS Missile Defense Project, SAR FY2025/2026, CENTCOM, DoD budget docs
+version: "1.1"
+last_updated: "2026-04-28"
+
+systems:
+
+  # ── TIER 1: HIGH-END INTERCEPTORS ──────────────────────────────────────────
+  THAAD:
+    display_name: "Terminal High Altitude Area Defense"
+    tier: STRATEGIC
+    type: interceptor_ballistic
+    unit_cost: 12700000
+    inventory_est: 370
+    annual_production: 32
+    time_to_replace_years: [3, 8]
+    engagement_range_km: 200
+    intercept_rate_pct: 90
+    quality_tier: HIGH
+    dud_rate: 0.01
+    consumption_rates:
+      theater_1: {mean: 7,  cv: 0.40}   # Middle East / Iran
+      theater_2: {mean: 3,  cv: 0.35}   # Indo-Pacific / China
+    theater_correlation: 0.35
+    notes: >
+      Deliveries paused Aug 2023–Apr 2027. 8 batteries total. 370 interceptors
+      remaining post-Epic Fury (down from ~632 pre-2025). $840M FY2026 request
+      for 57 interceptors. Strategic scarcity asset; 3–8yr replacement timeline.
+    sources:
+      - "CRS IF12645 (March 2026)"
+      - "CSIS Missile Defense Project"
+      - "JINSA Cost Estimates Israel-Iran War (2025)"
+      - "AEI Working Paper: Build Your Own Golden Dome (Sept 2025)"
+
+  SM3_IIA:
+    display_name: "Standard Missile-3 Block IIA"
+    tier: STRATEGIC
+    type: interceptor_midcourse
+    unit_cost: 24000000
+    inventory_est: 150
+    annual_production: 20
+    time_to_replace_years: [4, 6]
+    engagement_range_km: 700
+    intercept_rate_pct: 85
+    quality_tier: HIGH
+    dud_rate: 0.02
+    consumption_rates:
+      theater_1: {mean: 4,  cv: 0.40}
+      theater_2: {mean: 6,  cv: 0.45}
+    theater_correlation: 0.35
+    notes: >
+      Unit cost nearly tripled FY2021→FY2024 ($9M→$24M) due to production
+      uncertainty. Production ending IB variant in favour of IIA; constrained
+      replenishment. Critical Indo-Pacific asset.
+    sources:
+      - "CSIS Missile Defense Project"
+      - "MDA P-21 budget exhibits FY2025"
+
+  PAC3_MSE:
+    display_name: "Patriot PAC-3 Missile Segment Enhancement"
+    tier: OPERATIONAL
+    type: interceptor_tactical
+    unit_cost: 3700000
+    inventory_est: 1200
+    annual_production: 500
+    time_to_replace_years: [0.5, 2]
+    engagement_range_km: 35
+    intercept_rate_pct: 80
+    quality_tier: HIGH
+    dud_rate: 0.03
+    consumption_rates:
+      theater_1: {mean: 15, cv: 0.45}
+      theater_2: {mean: 12, cv: 0.40}
+    theater_correlation: 0.35
+    notes: >
+      Lockheed Martin ramp to 650/yr announced; target 2,000/yr by 2027.
+      Workhorse terminal air defense. ~$3.7M/unit per JINSA 2025 estimate.
+    sources:
+      - "JINSA Cost Estimates Israel-Iran War (2025)"
+      - "Lockheed Martin investor briefings 2025"
+
+  SM6:
+    display_name: "Standard Missile-6"
+    tier: OPERATIONAL
+    type: interceptor_multi_mission
+    unit_cost: 4300000
+    inventory_est: 800
+    annual_production: 125
+    time_to_replace_years: [2, 4]
+    engagement_range_km: 370
+    intercept_rate_pct: 82
+    quality_tier: HIGH
+    dud_rate: 0.03
+    consumption_rates:
+      theater_1: {mean: 8,  cv: 0.40}
+      theater_2: {mean: 15, cv: 0.45}
+    theater_correlation: 0.35
+    notes: >
+      Dual-role: intercept aircraft/cruise/terminal ballistic + surface strike.
+      Key Indo-Pacific asset for ASBM threat. Relatively small inventory.
+    sources:
+      - "SAR annual updates"
+      - "CSIS"
+
+  SM2:
+    display_name: "Standard Missile-2"
+    tier: OPERATIONAL
+    type: interceptor_air_defense
+    unit_cost: 2000000
+    inventory_est: 3000
+    annual_production: 200
+    time_to_replace_years: [1, 3]
+    engagement_range_km: 170
+    intercept_rate_pct: 75
+    quality_tier: MED
+    dud_rate: 0.05
+    consumption_rates:
+      theater_1: {mean: 30, cv: 0.50}
+      theater_2: {mean: 20, cv: 0.45}
+    theater_correlation: 0.35
+    notes: >
+      Workhorse Aegis interceptor. Large stockpile but aging fleet.
+      vs. aircraft, cruise missiles, and ASMs.
+    sources:
+      - "SAR annual updates"
+      - "CRS"
+
+  # ── TIER 2: PRECISION STRIKE ───────────────────────────────────────────────
+  Tomahawk_TLAM:
+    display_name: "Tomahawk Land Attack Missile"
+    tier: PRECISION_STRIKE
+    type: cruise_missile_offensive
+    unit_cost: 2100000
+    inventory_est: 4000
+    annual_production: 350
+    time_to_replace_years: [1, 3]
+    engagement_range_km: 1600
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.04
+    consumption_rates:
+      theater_1: {mean: 25, cv: 0.35}
+      theater_2: {mean: 40, cv: 0.40}
+    theater_correlation: 0.35
+    notes: >
+      GPS-guided strike missile. $2.1M/unit vs $35K LUCAS = 60:1 cost ratio
+      for comparable target sets. Production rate 350/yr vs 65/day two-war demand.
+      Senator's inventory reference likely referred to this system.
+    sources:
+      - "SAR"
+      - "CRS RL30563"
+
+  JASSM_ER:
+    display_name: "Joint Air-to-Surface Standoff Missile Extended Range"
+    tier: PRECISION_STRIKE
+    type: air_launched_cruise_missile
+    unit_cost: 1500000
+    inventory_est: 3500
+    annual_production: 600
+    time_to_replace_years: [1, 2]
+    engagement_range_km: 980
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.03
+    consumption_rates:
+      theater_1: {mean: 15, cv: 0.35}
+      theater_2: {mean: 30, cv: 0.35}
+    theater_correlation: 0.35
+    notes: "Stealth cruise missile; low radar cross-section; air-launched only"
+    sources:
+      - "SAR"
+      - "USAF budget docs"
+
+  # ── TIER 3: ATTRITABLE DRONES ─────────────────────────────────────────────
+  LUCAS:
+    display_name: "Low-Cost Unmanned Combat Attack System (FLM-136)"
+    tier: ATTRITION_OFFENSE
+    type: one_way_attack_drone
+    unit_cost: 35000
+    unit_cost_future: 5000
+    inventory_est: 5000
+    annual_production_target: 300000
+    time_to_replace_years: 0
+    engagement_range_km: 800
+    intercept_rate_pct: null
+    quality_tier: MED
+    dud_rate: 0.08
+    consumption_rates:
+      theater_1: {mean: 500,  cv: 0.60}
+      theater_2: {mean: 1000, cv: 0.65}
+    theater_correlation: 0.35
+    notes: >
+      Reverse-engineered Shahed-136. First combat use Feb 28 2026 (Epic Fury).
+      CENTCOM confirmed $35K/unit. Drone Dominance Phase IV target $5K/unit.
+      SpektreWorks AZ; 20 vendors in production pipeline.
+      $35K vs $2.1M Tomahawk = 60:1 cost advantage for appropriate targets.
+    sources:
+      - "CENTCOM statement March 2, 2026"
+      - "drone-warfare.com March 2026"
+      - "dsm.forecastinternational.com Dec 2025"
+
+  FPV_Quadcopter:
+    display_name: "FPV Quadcopter Attack Drone"
+    tier: ATTRITION_OFFENSE
+    type: fpv_attack_drone
+    unit_cost: 800
+    unit_cost_range: [400, 2000]
+    inventory_est: 50000
+    annual_production_target: 1000000
+    time_to_replace_years: 0
+    engagement_range_km: 10
+    intercept_rate_pct: null
+    quality_tier: LOW
+    dud_rate: 0.25
+    consumption_rates:
+      theater_1: {mean: 5000,  cv: 0.80}
+      theater_2: {mean: 10000, cv: 0.80}
+    theater_correlation: 0.35
+    notes: >
+      Short-range tactical; proven at scale in Ukraine. Battlefield logistics
+      disruptor. Quality control is primary constraint at mass production.
+      Russian Geran-2 observed 20-35% failure rates; US must avoid this pattern.
+      MIL-SPEC quality standard target: <5% dud rate.
+    sources:
+      - "Open-source Ukraine OSINT"
+      - "DIU briefings 2025-2026"
+
+  Switchblade_600:
+    display_name: "Switchblade 600 Loitering Munition"
+    tier: ATTRITION_OFFENSE
+    type: loitering_munition
+    unit_cost: 100000
+    inventory_est: 5000
+    annual_production: 2000
+    time_to_replace_years: 0
+    engagement_range_km: 40
+    intercept_rate_pct: null
+    quality_tier: MED
+    dud_rate: 0.06
+    consumption_rates:
+      theater_1: {mean: 50,  cv: 0.50}
+      theater_2: {mean: 100, cv: 0.55}
+    theater_correlation: 0.35
+    notes: "Anti-armor capable; man-portable; included in Replicator"
+    sources:
+      - "CRS IF12611"
+      - "Responsible Statecraft 2025"
+
+  # ── TIER 4: COUNTER-DRONE ─────────────────────────────────────────────────
+  DroneHunter:
+    display_name: "Drone-Hunter C-UAS Interceptor"
+    tier: ATTRITION_DEFENSE
+    type: c_uas_interceptor_drone
+    unit_cost: 15000
+    inventory_est: 2000
+    annual_production_target: 50000
+    time_to_replace_years: 0
+    engagement_range_km: 5
+    intercept_rate_pct: 70
+    quality_tier: LOW
+    dud_rate: 0.15
+    consumption_rates:
+      theater_1: {mean: 100, cv: 0.65}
+      theater_2: {mean: 200, cv: 0.65}
+    theater_correlation: 0.35
+    notes: >
+      Drone-vs-drone intercept; nets or kinetic payload. Proven in Ukraine.
+      $15K DroneHunter vs $35K LUCAS = favorable 2.3:1 CAR for US.
+      Immature US production base; quality investment required.
+    sources:
+      - "Open-source Ukraine OSINT"
+      - "DIU C-UAS briefings 2026"
+
+  # ── TIER 5: DIRECTED ENERGY ───────────────────────────────────────────────
+  Iron_Beam_DEW:
+    display_name: "Iron Beam High-Energy Laser (Rafael/Elbit)"
+    tier: STRUCTURAL_SOLUTION
+    type: directed_energy_laser
+    unit_cost_per_shot: 2
+    system_cost: 20000000
+    inventory_est: 12
+    annual_production_target: 100
+    time_to_replace_years: [1, 3]
+    engagement_range_km: 7
+    intercept_rate_pct: 90
+    quality_tier: HIGH
+    dud_rate: 0.01
+    consumption_rates:
+      theater_1: {mean: 0, cv: 0}
+      theater_2: {mean: 0, cv: 0}
+    notes: >
+      Per-shot cost ~$2 (laser electricity). Confirmed operational vs drones/rockets
+      Lebanon 2026. $2/shot vs $3.7M PAC-3 = 1,850,000:1 CAR for drone intercept.
+      Structural solution to drone cost-curve inversion. Current inventory ~12 systems
+      (Israel). Limited US fielding (HELIOS programme).
+    sources:
+      - "Norskluftvern.com Air Defense DB March 2026"
+      - "Iron Beam operational reports Lebanon 2026"
+
+  HELIOS_Navy_DEW:
+    display_name: "High Energy Laser with Integrated Optical-dazzler (Lockheed)"
+    tier: STRUCTURAL_SOLUTION
+    type: directed_energy_laser_naval
+    unit_cost_per_shot: 1
+    system_cost: 150000000
+    inventory_est: 4
+    time_to_replace_years: [2, 5]
+    engagement_range_km: 5
+    intercept_rate_pct: 85
+    quality_tier: HIGH
+    dud_rate: 0.01
+    consumption_rates:
+      theater_1: {mean: 0, cv: 0}
+      theater_2: {mean: 0, cv: 0}
+    notes: "USS Preble operational; 60kW scalable to 150kW. Naval C-UAS primary"
+    sources:
+      - "Lockheed Martin programme briefs"
+      - "Navy budget documents FY2026"
+
+  # ── TIER 6: INFANTRY / PERSONAL DRONE DEFENSE ────────────────────────────
+  Skynet_12GA_AntiDrone:
+    display_name: "ALS/Maverick SKYNET 12-Gauge Anti-Drone Shell"
+    tier: INFANTRY_CUAS
+    type: personal_drone_defense_shotgun
+    unit_cost: 47
+    unit_cost_range: [46, 48]
+    inventory_est: 500000
+    annual_production_target: 10000000
+    time_to_replace_years: 0
+    engagement_range_km: 0.05
+    intercept_rate_pct: 60
+    quality_tier: MED
+    dud_rate: 0.10
+    consumption_rates:
+      theater_1: {mean: 50000, cv: 0.70}
+      theater_2: {mean: 100000, cv: 0.70}
+    theater_correlation: 0.20
+    notes: >
+      12-gauge shell deploying 5 tethered projectiles forming a 5-foot net.
+      Entangles drone propellers on contact. Compatible with any standard
+      12-gauge shotgun (Benelli M4 A.I. Drone Guardian is purpose-built platform).
+      U.S. Air Force already procuring. Two variants: single net (5ft) and
+      double net (14in + 24in). Last line of defense for ground troops and
+      sailors against FPV quadcopters. $47 vs $3.7M PAC-3 = 78,723:1 cost ratio
+      for terminal drone engagement. MIL-SPEC rifled choke barrel required.
+    sources:
+      - "ALS/Maverick Tactical product data; Botach/Primary Arms retail pricing 2026"
+      - "SHOT Show 2026 coverage — Sandboxx News (February 6, 2026)"
+      - "Pew Pew Tactical: Shotguns and Drones (August 2025)"
+      - "U.S. Air Force SKYNET procurement — public statements 2025"
+
+  DroneRound_556_NATO:
+    display_name: "Drone Round Defense 5.56 NATO Anti-Drone Cartridge"
+    tier: INFANTRY_CUAS
+    type: personal_drone_defense_rifle
+    unit_cost: 8
+    unit_cost_range: [6, 12]
+    inventory_est: 1000000
+    annual_production_target: 350000000
+    time_to_replace_years: 0
+    engagement_range_km: 0.1
+    intercept_rate_pct: 45
+    quality_tier: MED
+    dud_rate: 0.12
+    consumption_rates:
+      theater_1: {mean: 200000, cv: 0.80}
+      theater_2: {mean: 400000, cv: 0.80}
+    theater_correlation: 0.20
+    notes: >
+      Multi-projectile 5.56 NATO round splitting into 8 fragments (K variant,
+      50m effective range) or 5 fragments (L variant, 100m range). Belt-fed and
+      suppressor-compatible. No weapon modifications required — load alongside
+      standard ball in same magazines. Exits at 2,200 fps (~2x standard 12-gauge).
+      Patent-pending design. Military/LE only as of Jan 2026. Parent company
+      (Freedom Munitions/Unlimited Ammo) has 350M round/yr production capacity.
+      Unit cost estimated $6–12 at volume; currently higher in initial lots.
+      CRITICAL ADVANTAGE: infantry already carrying M4/M16 can engage drones
+      without a separate weapon system. Removes logistics burden of separate
+      anti-drone shotgun per squad.
+    sources:
+      - "SHOT Show 2026 — The Firearm Blog (January 30, 2026)"
+      - "Drone Round Defense SHOT 2026 booth data"
+      - "Sandboxx News: New frontiers in anti-drone munitions (February 2026)"
+
+  DroneRound_762_NATO:
+    display_name: "Drone Round Defense 7.62 NATO Anti-Drone Cartridge"
+    tier: INFANTRY_CUAS
+    type: personal_drone_defense_rifle
+    unit_cost: 12
+    unit_cost_range: [10, 18]
+    inventory_est: 250000
+    annual_production_target: 50000000
+    time_to_replace_years: 0
+    engagement_range_km: 0.15
+    intercept_rate_pct: 50
+    quality_tier: MED
+    dud_rate: 0.15
+    consumption_rates:
+      theater_1: {mean: 50000, cv: 0.80}
+      theater_2: {mean: 100000, cv: 0.80}
+    theater_correlation: 0.20
+    notes: >
+      7.62 NATO variant of the Drone Round system. L variant: 5 projectiles,
+      100m effective range. Higher velocity than 5.56; increased drone
+      destruction probability. Still in testing as of SHOT 2026; velocity
+      figures not yet published. Compatible with M240, M60, Mk 48 machine guns
+      — gives crew-served weapons a dedicated anti-drone role.
+      Estimated unit cost higher than 5.56 variant due to larger projectile mass.
+    sources:
+      - "SHOT Show 2026 — The Firearm Blog (January 30, 2026)"
+      - "Drone Round Defense product brief SHOT 2026"

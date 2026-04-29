@@ -1,204 +1,285 @@
-# Cost Asymmetry Simulator
+# Cost-Asymmetry Simulator (CAS)
+### MTS Pillar 3 — Paper 6: *The Cost Curve as Deterrent*
 
-**Compound Warfare Economics — Simulation Tool for Cost-Curve Deterrence Analysis**
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://python.org)
+[![SSRN](https://img.shields.io/badge/SSRN-forthcoming-orange.svg)](https://ssrn.com)
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Tests](https://img.shields.io/badge/tests-planned_100+-brightgreen.svg)]()
-[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)]()
+A Monte Carlo inventory optimisation simulator for U.S. military munitions,
+implementing the **Dyna-METRIC readiness-based sparing framework** adapted for
+consumable weapons systems. Produces Cost Asymmetry Ratio (CAR) matrices,
+two-war depletion timelines, and marginal-value portfolio allocation guidance.
 
-## Overview
+---
 
-The Cost Asymmetry Simulator models compound warfare cost dynamics across five domains: offense-defense cost imbalance, attrition-replacement disparity, industrial tempo mismatch, economic cascade costs, and reconstruction burden. It computes the Cost Asymmetry Ratio (CAR), simulates engagement cost exchanges, and evaluates compound deterrence stability.
+## What it does
 
-This tool is the companion software for:
+CAS answers three policy questions central to U.S. defence economics:
 
-> Green, R.J. (2026) "The Cost Curve as Deterrent: Compound Warfare Economics, Saturation Dynamics, and the Structural Unaffordability of Great-Power Conflict." Working Paper. *International Security* (target).
+1. **Can the U.S. fight two wars simultaneously?**
+   — Stochastic depletion analysis across all major interceptor and strike inventories
 
-It implements the third pillar of the Mutual Threshold Saturation (MTS) unified deterrence architecture.
+2. **How do we achieve overwhelming cost-asymmetry deterrence?**
+   — CAR matrix ranks every threat/defender pairing from worst to best exchange ratio
 
-## Three-Pillar MTS Architecture
+3. **Where should the next marginal defence dollar go?**
+   — Coverage-days-per-dollar ranking identifies highest readiness ROI
 
-| Pillar | Domain | Tool | Paper |
-|--------|--------|------|-------|
-| 1. Material MTS | Supply chain compound dependencies | [mts-doctrine-simulator](https://github.com/rjgreenresearch/mts-doctrine-simulator) | Green (2026d) |
-| 2. Human Capital MTS | Key-person institutional fragility | [hcts-simulator](https://github.com/rjgreenresearch/hcts-simulator) | Green (2026e) |
-| **3. Cost Asymmetry MTS** | **Compound warfare economics** | **cost-asymmetry-simulator (this repo)** | **Green (2026f)** |
+All data is drawn from **publicly available U.S. government sources** — CRS reports,
+CSIS Missile Defense Project, DoD Selected Acquisition Reports, CENTCOM press releases,
+and DoD budget documents. No classified data is used or required.
 
-## Core Capabilities
-
-**Cost Asymmetry Ratio (CAR):** Measures the cost-exchange ratio between offensive and defensive systems. A CAR of 1:50 means the attacker spends $1 for every $50 the defender must spend. When the attacker can produce at industrial scale, unfavorable CARs become strategically decisive.
-
-**Five-Domain Taxonomy:**
-- **Offense-Defense Imbalance:** Drone vs interceptor cost exchange ($20K OWA vs $4M SM-6)
-- **Attrition-Replacement Disparity:** Platform loss vs replacement timeline (F-35: 3-5 years)
-- **Industrial Tempo Mismatch:** Weeks (drones) vs decades (carriers) production cycles
-- **Economic Cascade Costs:** Trade disruption multiplied across dependent sectors
-- **Reconstruction Burden:** Post-conflict fiscal obligations (Iraq/Afghanistan: $8T+)
-
-**Simulation Engines:**
-- Day-by-day engagement cost exchange with magazine depletion
-- Compound conflict cost across all five domains simultaneously
-- Deterrence threshold assessment (expected cost vs expected gain)
-- Three-pillar integration with Material MTS and Human Capital MTS
-
-**Pre-Built Scenarios:**
-- Operation Epic Fury (Houthi Red Sea cost exchange)
-- Taiwan Strait compound scenario (all five domains)
-- Drone saturation defense (interceptor-only vs DEW-augmented)
-- A-10 vs F-35 cost-exchange comparison (legacy modernization case)
+---
 
 ## Installation
 
 ```bash
-git clone https://github.com/rjgreenresearch/cost-asymmetry-simulator.git
+git clone https://github.com/rjgreenresearch/cost-asymmetry-simulator
 cd cost-asymmetry-simulator
 pip install -r requirements.txt
 ```
 
-## Quick Start
+**Python 3.10+ required.** Dependencies: `numpy`, `pyyaml`, `jinja2`, `matplotlib`, `fpdf2`.
 
-```python
-from cost_asymmetry_simulator import WeaponSystem, Category
-from cost_asymmetry_simulator.analysis import compute_car
-from cost_asymmetry_simulator.simulation import simulate_engagement_exchange
+---
 
-# Define offense-defense pair
-shahed_136 = WeaponSystem(
-    id="shahed_136", name="Shahed-136 OWA",
-    category=Category.OFFENSIVE,
-    unit_cost_usd=30_000,
-    marginal_engagement_cost=30_000,
-    production_time_months=0.5,
-    max_monthly_production=500
-)
+## Quick start
 
-sm6 = WeaponSystem(
-    id="sm6", name="Standard Missile-6",
-    category=Category.DEFENSIVE,
-    unit_cost_usd=4_300_000,
-    marginal_engagement_cost=4_300_000,
-    production_time_months=18,
-    max_monthly_production=30
-)
+```bash
+# Run with all defaults (90-day two-war horizon, $1B portfolio budget)
+python -m cas
 
-# Compute Cost Asymmetry Ratio
-car = compute_car(shahed_136, sm6)
-print(f"CAR: 1:{car.ratio:.0f} in attacker's favor")
+# List all configured weapon and threat systems
+python -m cas --list-systems
 
-# Simulate 90-day engagement exchange
-result = simulate_engagement_exchange(
-    offense=[shahed_136],
-    defense=[sm6],
-    attack_tempo=5,  # 5 attacks per day
-    duration_days=90
-)
-result.plot_cost_trajectories()
-print(f"Defender budget exhaustion: day {result.defender_exhaustion_day}")
+# Custom run: 5,000 simulations, 60-day horizon, HTML+PDF report
+python -m cas --n-sims 5000 --horizon 60 --report html,pdf
+
+# Optimise a $5B portfolio with production surge
+python -m cas --budget 5.0 --surge 0.5 --scenario two_war_surge
+
+# Use a custom weapon systems database
+python -m cas --weapon-config my_updated_weapons.yaml
 ```
 
-## Repository Structure
+All output is written to `output/<run_id>/` with datetime stamping:
+```
+output/
+└── run_20260428_143022/
+    ├── cas.log           ← full debug log
+    ├── results.json      ← all simulation results
+    ├── report.html       ← self-contained interactive report
+    ├── report.pdf        ← print-ready report
+    ├── car_matrix.csv    ← CAR table (if --report csv)
+    ├── depletion.csv
+    ├── marginal.csv
+    └── run_manifest.json ← run metadata
+```
+
+---
+
+## Command-line reference
+
+```
+python -m cas --help
+```
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--n-sims N` | 10,000 | Monte Carlo iterations per system |
+| `--horizon DAYS` | 90 | Simulation horizon (two-war standard = 90) |
+| `--budget B` | 1.0 | Portfolio budget in $B |
+| `--scenario NAME` | — | Named scenario from `simulation.yaml` |
+| `--surge F` | 0.0 | Production surge fraction (0.5 = +50%) |
+| `--weapon-config PATH` | config/ | Custom weapon systems YAML |
+| `--threat-config PATH` | config/ | Custom threat systems YAML |
+| `--sim-config PATH` | config/ | Custom simulation parameters YAML |
+| `--output-dir DIR` | output/ | Base output directory |
+| `--report FORMATS` | html | Comma-separated: html, pdf, json, csv, none |
+| `--run-id ID` | auto | Override auto-generated run ID |
+| `--log-level LEVEL` | INFO | Console log verbosity |
+| `--list-systems` | — | Print all systems and exit |
+| `--version` | — | Print version and exit |
+
+---
+
+## Configuration
+
+All simulation parameters, weapon systems, and threat systems are defined in
+human-readable YAML files under `config/`. No code changes are required to
+add new systems or update cost data.
+
+### `config/weapon_systems.yaml`
+
+Each system entry includes:
+- Unit cost, inventory estimate, production rates
+- Quality tier and dud rate (for quality-adjusted CAR)
+- Theater consumption rates (mean + coefficient of variation)
+- Source citations for all cost figures
+
+Example — adding a new system:
+```yaml
+systems:
+  My_New_System:
+    display_name: "New Interceptor XYZ"
+    tier: OPERATIONAL
+    type: interceptor_tactical
+    unit_cost: 5000000
+    inventory_est: 500
+    annual_production: 200
+    quality_tier: HIGH
+    dud_rate: 0.02
+    consumption_rates:
+      theater_1: {mean: 10, cv: 0.4}
+      theater_2: {mean: 8,  cv: 0.4}
+    notes: "Source: CRS report XYZ"
+    sources: ["CRS XYZ 2026"]
+```
+
+### `config/simulation.yaml`
+
+Controls simulation parameters, scenario definitions, logging verbosity,
+and output format defaults. Named scenarios can be invoked with `--scenario`.
+
+### `config/threat_systems.yaml`
+
+Adversary weapon system cost and capability data, including dud rates
+(Russian Geran-2/Shahed: ~25% observed; Iranian MRBM: ~5%).
+
+---
+
+## Methodology
+
+### Cost Asymmetry Ratio (CAR)
+```
+CAR = adversary unit cost / US defensive response cost
+CAR_adj = (adversary effective cost) / (US effective cost)
+        where effective cost = unit cost / (1 − dud_rate)
+```
+CAR < 1: adversary has cost advantage. CAR > 1: US has cost advantage.
+
+### Monte Carlo demand model
+Daily consumption sampled from **Negative Binomial(r, p)** calibrated from
+mean and CV per theater. Negative Binomial is preferred over Poisson because
+combat demand is overdispersed ("bursty") relative to a Poisson process.
+
+Inter-theater correlation applied: when Theater 1 demand surges, Theater 2
+mean is proportionally adjusted (correlation coefficient: 0.35).
+
+### Dyna-METRIC adaptation
+Adapted from the **Dyna-METRIC readiness-based sparing model**
+(Sherbrooke 1968; RAND R-1872-AF), originally developed for aircraft spare
+parts, here applied to consumable munitions. Key adaptation: consumable
+systems deplete to zero (unlike repairable parts that cycle through repair).
+
+The portfolio optimiser uses a **greedy marginal-value algorithm**: at each
+$100M step, budget is allocated to the system with the highest marginal gain
+in median days-of-coverage. This is tractable, transparent, and consistent
+with the Dyna-METRIC sparing philosophy.
+
+---
+
+## Project structure
 
 ```
 cost-asymmetry-simulator/
-├── README.md
-├── LICENSE                          # Apache 2.0
-├── CITATION.cff
-├── SPECIFICATION.md                 # Full technical specification
-├── DATA_ACQUISITION.md              # Data source catalog
-├── requirements.txt
-├── setup.py
+├── cas/
+│   ├── __init__.py          # Package metadata
+│   ├── __main__.py          # python -m cas entry point
+│   ├── cli.py               # argparse CLI with full help
+│   ├── config.py            # YAML config loader and Config class
+│   ├── logging_config.py    # Rotating file + console logging
+│   ├── simulator.py         # Deterministic CAR/depletion/marginal
+│   ├── mc_simulator.py      # Monte Carlo engine (Dyna-METRIC)
+│   ├── reporter.py          # HTML + PDF report generator
+│   └── utils.py             # Run ID, file helpers, manifest
 │
-├── cost_asymmetry_simulator/
-│   ├── __init__.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── weapon_system.py         # WeaponSystem data model
-│   │   ├── conflict_scenario.py     # ConflictScenario model
-│   │   └── cost_ratio.py            # CostAsymmetryRatio model
-│   ├── cost_models/
-│   │   ├── __init__.py
-│   │   ├── offense_defense.py       # CAR computation per system pair
-│   │   ├── attrition_replacement.py # Platform loss/replacement modeling
-│   │   ├── industrial_tempo.py      # Production cycle comparison
-│   │   ├── economic_cascade.py      # Cross-sector disruption costs
-│   │   └── reconstruction.py        # Post-conflict fiscal burden
-│   ├── simulation/
-│   │   ├── __init__.py
-│   │   ├── engagement.py            # Day-by-day cost exchange
-│   │   ├── compound_cost.py         # Five-domain compound simulation
-│   │   └── deterrence.py            # Deterrence threshold assessment
-│   ├── compound/
-│   │   ├── __init__.py
-│   │   ├── three_pillar.py          # Material + Human Capital + Cost
-│   │   └── integration.py           # mts-core interface
-│   └── export/
-│       ├── __init__.py
-│       ├── csv_export.py
-│       └── visualisation.py
+├── config/
+│   ├── weapon_systems.yaml  # Weapon system database (editable)
+│   ├── threat_systems.yaml  # Threat system database (editable)
+│   └── simulation.yaml      # Simulation parameters and scenarios
 │
-├── data/
-│   ├── weapon_systems.csv           # Standardized system costs from SARs/J-Books
-│   ├── interceptor_costs.csv        # Missile defense system costs
-│   ├── drone_costs.csv              # OWA and adversary UAS costs
-│   ├── engagement_log_epic_fury.csv # CENTCOM Red Sea engagement data
-│   └── deflators.csv                # DoD Green Book constant-dollar deflators
-│
-├── scenarios/
-│   ├── epic_fury.yaml
-│   ├── taiwan_strait.yaml
-│   ├── drone_saturation.yaml
-│   └── legacy_comparison.yaml
+├── templates/
+│   └── report.html          # Jinja2 HTML report template
 │
 ├── tests/
-│   ├── test_models.py               # 15 tests
-│   ├── test_engagement.py           # 20 tests
-│   ├── test_compound_cost.py        # 20 tests
-│   ├── test_deterrence.py           # 15 tests
-│   ├── test_scenarios.py            # 15 tests
-│   ├── test_integration.py          # 10 tests
-│   └── test_export.py               # 5 tests
+│   ├── test_config.py
+│   ├── test_simulator.py
+│   └── test_mc.py
 │
-└── docs/
-    ├── methodology.md
-    ├── data_sources.md
-    └── examples/
+├── docs/
+│   └── methodology.md
+│
+├── output/                  # Created at runtime; gitignored
+├── README.md
+├── requirements.txt
+├── setup.py
+├── CITATION.cff
+└── .gitignore
 ```
 
-## Data Sources
+---
 
-All cost data is derived from primary U.S. government sources. Key sources include DoD Selected Acquisition Reports (SARs), Comptroller Budget Justification Documents (J-Books), CENTCOM press releases for Operation Epic Fury engagement data, CRS independent cost analyses, GAO industrial base assessments, and the Brown University Costs of War Project. Full documentation in DATA_ACQUISITION.md.
+## Academic context
 
-## Testing
+This simulator is the computational companion to:
 
-```bash
-pytest tests/ -v
-```
+> Green, R.J. (2026). "The Cost Curve as Deterrent: Compound Warfare
+> Economics, Saturation Dynamics, and the Structural Unaffordability of
+> Great-Power Conflict." *International Security* (forthcoming).
+> SSRN: forthcoming.
 
-Target: 100+ automated tests across data model validation, CAR computation, engagement exchange simulation, compound cost modeling, deterrence assessment, scenario validation, and three-pillar integration.
+Part of the **Mutual Threshold Saturation (MTS)** research programme:
 
-## Related Research
+| Paper | Pillar | Journal |
+|-------|--------|---------|
+| Paper 4 — Supply Chain Dependencies | MTS-1 | *Risk Analysis* |
+| Paper 5 — Human Capital Threshold   | MTS-2 | *Intelligence and National Security* |
+| **Paper 6 — Cost Curve as Deterrent** | **MTS-3** | ***International Security*** |
+| Paper 7 — Compound Economic Fragility | MTS-4 | *Journal of Post Keynesian Economics* |
+| Paper 8 — Aquifer Depletion          | MTS-5 | *Ecological Economics* |
 
-This tool is part of a six-paper research programme on Mutual Threshold Saturation:
+---
 
-1. Green (2026a) — Spatial Clustering. DOI: [10.2139/ssrn.6454202](https://doi.org/10.2139/ssrn.6454202)
-2. Green (2026b) — Ownership Visibility. DOI: [10.2139/ssrn.6520499](https://doi.org/10.2139/ssrn.6520499)
-3. Green (2026c) — Regulatory Perimeter. DOI: [10.2139/ssrn.6525938](https://doi.org/10.2139/ssrn.6525938)
-4. Green (2026d) — Supply Chain Dependencies / Material MTS. DOI: [10.2139/ssrn.6454618](https://doi.org/10.2139/ssrn.6454618)
-5. Green (2026e) — Human Capital Threshold Saturation
-6. Green (2026f) — Cost Asymmetry Doctrine (this tool's companion paper)
+## Data sources
 
-## Author
+All cost and inventory data is from publicly available U.S. government and
+think-tank sources. Per-system citations are in `config/weapon_systems.yaml`.
 
-**Robert J. Green**
-Independent Researcher | Former U.S. Army Air Defense Artillery Officer
-MBA, University of Central Florida | BA, Philosophy and Leadership Studies
-ORCID: [0009-0002-9097-1021](https://orcid.org/0009-0002-9097-1021)
-Website: [rjgreenresearch.org](https://rjgreenresearch.org)
+Primary sources used:
+- Congressional Research Service (CRS) reports IF12645, IF12611, RL30563
+- CSIS Missile Defense Project interceptor cost database
+- DoD Selected Acquisition Reports (SARs), FY2025/FY2026
+- Missile Defense Agency (MDA) budget exhibits (P-21)
+- CENTCOM press releases and briefings
+- JINSA: "Missile and Interceptor Cost Estimates During the U.S.-Israel-Iran War" (2025)
+- AEI: "Build Your Own Golden Dome" (September 2025)
+- Norskluftvern Air Defense Systems Cost Database (March 2026)
+- Brown University Costs of War Project
+
+---
 
 ## License
 
-Apache 2.0. See [LICENSE](LICENSE).
+Apache License 2.0 — see [LICENSE](LICENSE).
+
+---
 
 ## Citation
 
-If you use this tool in your research, please cite both the software and the companion paper. See [CITATION.cff](CITATION.cff).
+```bibtex
+@software{green2026cas,
+  author  = {Green, Robert J.},
+  title   = {Cost-Asymmetry Simulator (CAS)},
+  year    = {2026},
+  version = {1.1.0},
+  url     = {https://github.com/rjgreenresearch/cost-asymmetry-simulator},
+  note    = {Companion software for Paper 6: The Cost Curve as Deterrent}
+}
+```
+
+See also [CITATION.cff](CITATION.cff) for full citation metadata.
+
+---
+
+*Robert J. Green | rjgreenresearch.org | ORCID: 0009-0002-9097-1021*

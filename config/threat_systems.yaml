@@ -1,0 +1,77 @@
+# Threat Systems Configuration
+version: "1.0"
+last_updated: "2026-04-28"
+
+threats:
+  Shahed_136:
+    display_name: "HESA Shahed-136 / Geran-2 One-Way Attack Drone"
+    origin: Iran / Russia
+    unit_cost: 20000
+    range_km: 2000
+    warhead_kg: 50
+    dud_rate: 0.25
+    notes: >
+      Core Houthi weapon; mass-produced. Russia uses as Geran-2.
+      20-35% observed failure rate in Ukraine. $20K cost raises adversary
+      effective cost to ~$26,667 per successful strike at 25% dud rate.
+    sources:
+      - "Ukraine battlefield OSINT 2023-2026"
+      - "IISS Military Balance 2025"
+
+  FPV_Adversary:
+    display_name: "Adversary FPV Quadcopter"
+    origin: Iran proxies / Russia
+    unit_cost: 500
+    range_km: 10
+    warhead_kg: 1
+    dud_rate: 0.20
+    notes: >
+      $500 drone forcing $3.7M PAC-3 response = 7,400:1 cost exchange.
+      Primary tactical threat from Iranian proxies in Middle East.
+    sources:
+      - "CENTCOM threat assessments"
+
+  Iranian_Ballistic_Missile_MRBM:
+    display_name: "Iranian MRBM (Shahab-3 / Ghadr class)"
+    origin: Iran
+    unit_cost: 3000000
+    range_km: 2000
+    warhead_kg: 750
+    dud_rate: 0.05
+    notes: >
+      Primary Epic Fury threat. Depletes THAAD and SM-3 stocks at
+      unfavorable exchange. Iran produced ~500 ballistic missiles in
+      2025-2026 conflict per CENTCOM estimates.
+    sources:
+      - "CSIS Iran Missile Threat Assessment"
+      - "CENTCOM Operation Epic Fury press releases"
+
+  Hypersonic_Glide_China:
+    display_name: "DF-17 Hypersonic Glide Vehicle"
+    origin: China
+    unit_cost: 10000000
+    range_km: 2000
+    warhead_kg: 500
+    dud_rate: 0.03
+    intercept_possible: false
+    notes: >
+      No current US interceptor for maneuvering hypersonic glide phase.
+      THAAD cannot engage. Structural capability gap requiring new
+      program (Glide Phase Interceptor, GPI).
+    sources:
+      - "CRS Hypersonic Weapons"
+      - "DoD China Military Power Report 2025"
+
+  Chinese_Anti_Ship_Missile_ASBM:
+    display_name: "DF-21D / DF-26 Anti-Ship Ballistic Missile"
+    origin: China
+    unit_cost: 5000000
+    range_km: 3500
+    warhead_kg: 500
+    dud_rate: 0.05
+    notes: >
+      Carrier-killer threat. Primary motivation for SM-6 Indo-Pacific
+      stockpiling. Forces carrier operations outside 1,500km of China coast.
+    sources:
+      - "CSIS China Power"
+      - "RAND Pacific Deterrence"
