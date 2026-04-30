@@ -4,6 +4,8 @@ Monte Carlo inventory optimisation engine for U.S. weapons systems under
 two-war stochastic demand. Adapts the Dyna-METRIC readiness-based sparing
 model (Sherbrooke 1968) to consumable munitions.
 
+This is a companion analysis product developed with the research paper [The Cost Curve as Deterrent: Compound Warfare Economics, Saturation Dynamics, and the Structural Unaffordability of Great-Power Conflict](https://papers.ssrn.com/abstract=6682203)
+
 ## Key Findings — Canonical Run
 
 **Run:** `run_20260430_160009` | **N =** 10,000 | **Seed =** 20260428  
