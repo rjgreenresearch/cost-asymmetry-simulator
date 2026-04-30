@@ -75,3 +75,113 @@ threats:
     sources:
       - "CSIS China Power"
       - "RAND Pacific Deterrence"
+
+  Shahed_131:
+    display_name: "HESA Shahed-131 (Smaller Shahed variant)"
+    origin: Iran
+    unit_cost: 15000
+    range_km: 900
+    warhead_kg: 30
+    dud_rate: 0.28
+    notes: >
+      Smaller, cheaper variant of Shahed-136. Range 900km vs 2000km.
+      Used in swarm roles where mass matters more than range.
+      $15K cost vs $20K Shahed-136; higher dud rate due to lower QC tier.
+    sources:
+      - "IISS Military Balance 2025"
+      - "Ukraine battlefield OSINT 2023-2026"
+
+  Geran_2:
+    display_name: "Geran-2 (Russian Shahed-136 Copy)"
+    origin: Russia
+    unit_cost: 20000
+    range_km: 2000
+    warhead_kg: 50
+    dud_rate: 0.30
+    notes: >
+      Russian-produced Shahed-136 copy. 25-35% observed dud rate in Ukraine
+      — higher than Iranian original due to component substitution under sanctions.
+      Same cost/performance envelope as Shahed-136 but lower quality discipline.
+    sources:
+      - "Ukraine battlefield OSINT 2023-2026"
+      - "IISS Military Balance 2025"
+
+  Kalibr_Cruise:
+    display_name: "3M14 Kalibr Land-Attack Cruise Missile (Russia)"
+    origin: Russia
+    unit_cost: 1300000
+    range_km: 2500
+    warhead_kg: 450
+    dud_rate: 0.05
+    notes: >
+      Russian primary land-attack cruise missile; ship/sub launched.
+      $1.3M unit cost vs $2.1M Tomahawk — roughly equivalent capability
+      at 62% of U.S. cost. Used extensively in Ukraine; stockpiles constrained
+      by Western component sanctions affecting guidance systems.
+    sources:
+      - "IISS Military Balance 2025"
+      - "RUSI Russia Military Assessment 2025"
+
+  Iskander_M:
+    display_name: "9K720 Iskander-M Ballistic Missile (Russia)"
+    origin: Russia
+    unit_cost: 3000000
+    range_km: 500
+    warhead_kg: 700
+    dud_rate: 0.04
+    intercept_possible: true
+    notes: >
+      Short-range ballistic missile; quasi-ballistic maneuvering trajectory
+      complicates intercept. $3M — same price tier as Iranian MRBM.
+      NATO's primary Russian theater ballistic threat; Patriot PAC-3 primary
+      intercept vehicle (CAR 0.811 — near parity).
+    sources:
+      - "IISS Military Balance 2025"
+      - "CRS Russian Armed Forces assessment"
+
+  Fateh110_SRBM:
+    display_name: "Fateh-110 Short-Range Ballistic Missile (Iran)"
+    origin: Iran
+    unit_cost: 500000
+    range_km: 300
+    warhead_kg: 650
+    dud_rate: 0.06
+    notes: >
+      Iranian solid-fuel SRBM. $500K unit cost vs $3.7M PAC-3 = CAR 0.135.
+      Accurate GPS-guided variant used against Israeli targets April 2024.
+      Supplied to Hezbollah and Houthi forces.
+    sources:
+      - "CSIS Iran Missile Threat Assessment 2025"
+      - "IISS Military Balance 2025"
+
+  KN23_NK:
+    display_name: "KN-23 Short-Range Ballistic Missile (North Korea)"
+    origin: North Korea
+    unit_cost: 2000000
+    range_km: 690
+    warhead_kg: 500
+    dud_rate: 0.08
+    notes: >
+      North Korean quasi-ballistic maneuvering missile supplied to Russia.
+      Used in Ukraine 2024-2026. $2M estimated cost vs $3.7M PAC-3 = CAR 0.54.
+      Low-pull trajectory and maneuvering capability degrades Patriot intercept
+      probability significantly compared to standard ballistic trajectory.
+    sources:
+      - "IISS Military Balance 2025"
+      - "U.S. intelligence community assessments 2025"
+
+  CM401_Antiship:
+    display_name: "CM-401 Anti-Ship Ballistic Missile (China)"
+    origin: China
+    unit_cost: 2500000
+    range_km: 290
+    warhead_kg: 200
+    dud_rate: 0.05
+    notes: >
+      Chinese ship-launched ASBM; hypersonic terminal phase against carriers.
+      $2.5M vs $4.3M SM-6 = CAR 0.58. Extremely difficult intercept due to
+      hypersonic terminal dive. Complements DF-21D/DF-26 for shorter-range
+      naval engagement within Yellow Sea / South China Sea.
+    sources:
+      - "CSIS China Power"
+      - "IISS Military Balance 2025"

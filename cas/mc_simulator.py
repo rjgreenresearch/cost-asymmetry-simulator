@@ -199,13 +199,15 @@ def days_coverage_distribution(
 # These are overridden by config/simulation.yaml → targets.portfolio_caps.
 # To disable a cap for a tier, set its value to 1.0 in simulation.yaml.
 _DEFAULT_TIER_CAPS: dict[str, float] = {
-    "STRATEGIC":           0.50,   # THAAD, SM-3: max 50%
-    "OPERATIONAL":         0.40,   # PAC-3, SM-2, SM-6: max 40%
-    "PRECISION_STRIKE":    0.30,   # Tomahawk, JASSM-ER: max 30%
-    "ATTRITION_OFFENSE":   0.25,   # LUCAS, FPV, Switchblade: max 25%
-    "ATTRITION_DEFENSE":   0.20,   # DroneHunter: max 20%
-    "INFANTRY_CUAS":       0.20,   # Skynet, DroneRound: max 20%
-    "STRUCTURAL_SOLUTION": 1.00,   # DEW: no cap (always highest priority)
+    "STRATEGIC":           0.50,   # THAAD, SM-3 IIA
+    "OPERATIONAL":         0.40,   # PAC-3, SM-2, SM-6
+    "PRECISION_STRIKE":    0.30,   # Tomahawk, JASSM-ER, APKWS, SDB, HIMARS
+    "ATTRITION_OFFENSE":   0.25,   # LUCAS, FPV, Switchblade, loitering munitions
+    "ATTRITION_DEFENSE":   0.25,   # DroneHunter, STING, Coyote, P1-Sun, Merops
+    "INFANTRY_CUAS":       0.20,   # Skynet, DroneRound
+    "STRUCTURAL_SOLUTION": 1.00,   # DEW — no cap (always highest priority)
+    "ALLIED_INTERCEPTOR":  0.35,   # Iron Dome, David's Sling, Arrow, NASAMS
+    "ELECTRONIC_WARFARE":  0.15,   # MALD decoy
 }
 _DEFAULT_PER_SYSTEM_CAP = 0.30    # no single system > 30% of total budget
 
@@ -218,8 +220,13 @@ def _resolve_caps(cfg: Config) -> tuple[dict[str, float], float]:
     """
     yaml_caps = cfg.portfolio_caps  # populated from simulation.yaml
     tier_caps = {}
+    # Start with defaults, then override with yaml values
     for tier, default in _DEFAULT_TIER_CAPS.items():
         tier_caps[tier] = float(yaml_caps.get(tier, default))
+    # Also include any NEW tiers defined in yaml not in defaults
+    for tier, val in yaml_caps.items():
+        if tier != "_per_system" and tier not in tier_caps:
+            tier_caps[tier] = float(val)
     per_sys = float(yaml_caps.get("_per_system", _DEFAULT_PER_SYSTEM_CAP))
     return tier_caps, per_sys
 

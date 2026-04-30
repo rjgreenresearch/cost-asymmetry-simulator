@@ -127,7 +127,10 @@ class Config:
         return self.horizons.get(name, 90)
 
     def tier_cap(self, tier: str) -> float:
-        """Return the max budget fraction for a tier. 1.0 = no cap."""
+        """
+        Return the maximum budget fraction allowed for a given tier.
+        Returns 1.0 (no cap) if the tier is not configured.
+        """
         return float(self.portfolio_caps.get(tier, 1.0))
 
     def consumable_systems(self) -> dict:

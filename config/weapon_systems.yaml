@@ -250,30 +250,72 @@ systems:
 
   # ── TIER 4: COUNTER-DRONE ─────────────────────────────────────────────────
   DroneHunter:
-    display_name: "Drone-Hunter C-UAS Interceptor"
+    display_name: "Drone-Hunter C-UAS Interceptor (Generic Category)"
     tier: ATTRITION_DEFENSE
     type: c_uas_interceptor_drone
-    unit_cost: 15000
+    unit_cost: 2500
+    unit_cost_range: [1000, 15000]
+    unit_cost_note: >
+      Corrected April 2026. Ukrainian combat-proven systems (STING: ~$2,500;
+      General Cherry interceptors: $1,000-$2,275) are the validated reference.
+      U.S. DIU-procured equivalents (Dedrone, Skydio) run $10,000-$15,000.
+      Simulation uses $2,500 as the operationally validated baseline.
     inventory_est: 2000
-    annual_production_target: 50000
+    annual_production_target: 500000
     time_to_replace_years: 0
-    engagement_range_km: 5
+    engagement_range_km: 25
     intercept_rate_pct: 70
-    quality_tier: LOW
+    quality_tier: MED
     dud_rate: 0.15
     consumption_rates:
       theater_1: {mean: 100, cv: 0.65}
       theater_2: {mean: 200, cv: 0.65}
-    theater_correlation: 0.35
+    theater_correlation: 0.20
     notes: >
-      Drone-vs-drone intercept; nets or kinetic payload. Proven in Ukraine.
-      $15K DroneHunter vs $35K LUCAS = favorable 2.3:1 CAR for US.
-      Immature US production base; quality investment required.
+      Drone-vs-drone intercept via high-speed FPV collision or net/kinetic payload.
+      Proven at operational scale in Ukraine. STING (Wild Hornets): ~$2,500,
+      360-deg antenna, EW-resistant, 25km range, 1,000+ Shahed kills in 4 months.
+      General Cherry interceptors: $1,000-$2,275, ~1,000/day production rate.
+      P1-Sun and Merops AS-3: air-launched variants used by U.S. forces in Middle East.
+      At $2,500 vs $20,000 Shahed: CAR = 8.0 (strong US advantage).
+      At $2,500 vs $500 FPV: CAR = 0.20 (adversary advantage, but viable at scale).
     sources:
-      - "Open-source Ukraine OSINT"
-      - "DIU C-UAS briefings 2026"
+      - "Wild Hornets / STING programme documentation"
+      - "General Cherry production data — Ukrainian MoD"
+      - "P1-Sun / Merops AS-3: DIU briefings 2025-2026"
+      - "Sandboxx News: Ukrainian drone-hunter systems (2025-2026)"
+      - "CORRECTION: Previous $15,000 figure sourced from U.S. DIU procurement"
+      - "estimates for Dedrone/Skydio platforms, not Ukrainian combat systems."
 
-  # ── TIER 5: DIRECTED ENERGY ───────────────────────────────────────────────
+  STING_Interceptor:
+    display_name: "STING Drone-Hunter (Wild Hornets, Ukraine)"
+    tier: ATTRITION_DEFENSE
+    type: c_uas_interceptor_drone_fpv
+    unit_cost: 2500
+    inventory_est: 5000
+    annual_production_target: 200000
+    time_to_replace_years: 0
+    engagement_range_km: 25
+    intercept_rate_pct: 75
+    quality_tier: MED
+    dud_rate: 0.12
+    consumption_rates:
+      theater_1: {mean: 150, cv: 0.60}
+      theater_2: {mean: 300, cv: 0.60}
+    theater_correlation: 0.20
+    notes: >
+      Best-documented Ukrainian drone-hunter. Designed by Wild Hornets volunteer group.
+      Over 1,000 Russian Shahed kills in first four months of deployment.
+      High-speed FPV collision intercept method. 360-degree antenna, night operations
+      capable, EW-resistant. Intercepts Shaheds, Lancets, Zala, SuperCam.
+      Range 25km. Mass-produced and widely deployed in Ukraine.
+      $2,500 vs $20,000 Shahed = CAR of 8.0 — strong US/defender advantage.
+    sources:
+      - "Wild Hornets programme documentation 2025-2026"
+      - "Ukrainian MoD operational reporting"
+      - "Sandboxx News: STING interceptor coverage (2025-2026)"
+
+
   Iron_Beam_DEW:
     display_name: "Iron Beam High-Energy Laser (Rafael/Elbit)"
     tier: STRUCTURAL_SOLUTION
@@ -411,3 +453,511 @@ systems:
     sources:
       - "SHOT Show 2026 — The Firearm Blog (January 30, 2026)"
       - "Drone Round Defense product brief SHOT 2026"
+
+  # ── TIER: ALLIED INTERCEPTORS ─────────────────────────────────────────────
+  Iron_Dome_Tamir:
+    display_name: "Iron Dome Tamir Interceptor (Rafael, Israel)"
+    tier: ALLIED_INTERCEPTOR
+    type: interceptor_short_range
+    unit_cost: 50000
+    inventory_est: 2000
+    annual_production: 3000
+    time_to_replace_years: 0.5
+    engagement_range_km: 70
+    intercept_rate_pct: 90
+    quality_tier: HIGH
+    dud_rate: 0.02
+    consumption_rates:
+      theater_1: {mean: 40, cv: 0.50}
+      theater_2: {mean: 10, cv: 0.45}
+    theater_correlation: 0.25
+    notes: >
+      $50K Tamir vs $20K Shahed = CAR 0.40 (adversary advantage at unit level,
+      but operationally proven against rockets/drones/mortars). Joint US-Israeli
+      production; U.S. FY2026 supplemental included $1.8B for Iron Dome replenishment.
+      Proven: 90%+ intercept rate against rockets in Lebanon/Gaza operations.
+    sources:
+      - "CSIS Missile Defense Project"
+      - "DoD FY2026 supplemental appropriations"
+      - "Rafael Advanced Defense Systems"
+
+  Davids_Sling_Stunner:
+    display_name: "David's Sling Stunner Interceptor (Rafael/RTX)"
+    tier: ALLIED_INTERCEPTOR
+    type: interceptor_medium_range
+    unit_cost: 1000000
+    inventory_est: 400
+    annual_production: 200
+    time_to_replace_years: 1
+    engagement_range_km: 300
+    intercept_rate_pct: 85
+    quality_tier: HIGH
+    dud_rate: 0.03
+    consumption_rates:
+      theater_1: {mean: 5, cv: 0.45}
+      theater_2: {mean: 3, cv: 0.40}
+    theater_correlation: 0.30
+    notes: >
+      Fills gap between Iron Dome (rockets) and Arrow 3 (ballistic missiles).
+      Primary target: cruise missiles, drones, short/medium ballistic missiles.
+      $1M vs Iranian Fateh-110 SRBM ($500K) = CAR 0.50 (adversary marginal advantage).
+      Joint US-Israeli programme; U.S. co-production via Raytheon.
+    sources:
+      - "CSIS Missile Defense Project"
+      - "Israeli MoD procurement data 2025"
+
+  Arrow_3:
+    display_name: "Arrow 3 Exo-Atmospheric Interceptor (IAI/Boeing)"
+    tier: ALLIED_INTERCEPTOR
+    type: interceptor_exo_atmospheric
+    unit_cost: 3200000
+    inventory_est: 100
+    annual_production: 30
+    time_to_replace_years: 3
+    engagement_range_km: 2400
+    intercept_rate_pct: 85
+    quality_tier: HIGH
+    dud_rate: 0.03
+    consumption_rates:
+      theater_1: {mean: 2, cv: 0.40}
+      theater_2: {mean: 4, cv: 0.45}
+    theater_correlation: 0.30
+    notes: >
+      Exo-atmospheric intercept of IRBMs and ICBMs. $3.2M vs Iranian Shahab-3
+      MRBM ($3M) = CAR 0.94 (near parity — still marginal adversary advantage).
+      U.S. sold Arrow 3 to Germany 2023; expanding allied footprint.
+      Very limited inventory constrains two-war utility.
+    sources:
+      - "IAI programme data"
+      - "U.S.-Israel Arrow cooperative programme documentation"
+
+  NASAMS:
+    display_name: "NASAMS AIM-120 AMRAAM Interceptor"
+    tier: ALLIED_INTERCEPTOR
+    type: interceptor_medium_air_defense
+    unit_cost: 400000
+    inventory_est: 3000
+    annual_production: 600
+    time_to_replace_years: 0.5
+    engagement_range_km: 50
+    intercept_rate_pct: 80
+    quality_tier: HIGH
+    dud_rate: 0.04
+    consumption_rates:
+      theater_1: {mean: 20, cv: 0.50}
+      theater_2: {mean: 30, cv: 0.50}
+    theater_correlation: 0.30
+    notes: >
+      AMRAAM-based ground-launched air defense. Deployed Ukraine, Norway, Finland,
+      Gulf states. $400K vs Shahed ($20K) = CAR 0.05 (adversary significant advantage).
+      Shared production base with AIM-120 for F-15/F-16 — competition for inventory.
+      Versatile against aircraft, cruise missiles, and drones.
+    sources:
+      - "Kongsberg/RTX NASAMS programme data"
+      - "DoD Ukraine assistance packages 2022-2026"
+
+  # ── TIER: PRECISION STRIKE (EXPANDED) ────────────────────────────────────
+  APKWS:
+    display_name: "APKWS Advanced Precision Kill Weapon System (BAE)"
+    tier: PRECISION_STRIKE
+    type: laser_guided_rocket
+    unit_cost: 28000
+    inventory_est: 50000
+    annual_production: 30000
+    time_to_replace_years: 0
+    engagement_range_km: 11
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.03
+    consumption_rates:
+      theater_1: {mean: 200, cv: 0.55}
+      theater_2: {mean: 100, cv: 0.50}
+    theater_correlation: 0.25
+    notes: >
+      Converts unguided 70mm Hydra rockets to laser-guided at $28K vs $115K Hellfire.
+      Confirmed use against Houthi drones in Red Sea 2024-2026 by F/A-18 and AH-64.
+      $28K vs $500 FPV = CAR 0.018 (adversary advantage, but 4x better than Patriot).
+      High production rate (30K/yr) provides better sustainability than premium PGMs.
+      Aviation-launched; requires fixed-wing or rotary wing platform.
+    sources:
+      - "BAE Systems APKWS programme data"
+      - "NAVAIR procurement data FY2025"
+      - "CENTCOM Red Sea AAR 2024-2026"
+
+  SDB_GBU39:
+    display_name: "Small Diameter Bomb GBU-39/B (Boeing)"
+    tier: PRECISION_STRIKE
+    type: glide_bomb
+    unit_cost: 40000
+    inventory_est: 17000
+    annual_production: 4000
+    time_to_replace_years: 0.5
+    engagement_range_km: 110
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.02
+    consumption_rates:
+      theater_1: {mean: 30, cv: 0.40}
+      theater_2: {mean: 60, cv: 0.45}
+    theater_correlation: 0.30
+    notes: >
+      250lb GPS/INS guided glide bomb; 4 per aircraft station vs 1 JDAM.
+      High volume precision strike vs hardened targets. $40K vs $2.1M Tomahawk
+      for same target set = 52:1 platform cost advantage where aircraft access
+      permits. SDB II (Stormbreaker) adds moving target capability at $110K.
+    sources:
+      - "USAF SAR FY2025"
+      - "Boeing programme data"
+
+  HIMARS_GMLRS:
+    display_name: "HIMARS GMLRS M31 Guided Rocket (Lockheed)"
+    tier: PRECISION_STRIKE
+    type: surface_launched_guided_rocket
+    unit_cost: 168000
+    inventory_est: 15000
+    annual_production: 9000
+    time_to_replace_years: 0
+    engagement_range_km: 84
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.03
+    consumption_rates:
+      theater_1: {mean: 25, cv: 0.45}
+      theater_2: {mean: 50, cv: 0.50}
+    theater_correlation: 0.30
+    notes: >
+      GPS-guided rocket fired from HIMARS/M270. Proven Ukraine, Middle East.
+      $168K vs $2.1M Tomahawk for similar ground strike = 12.5:1 cost advantage
+      within 84km range. 9K/year production is strongest in class.
+      Surface-launched — no aircraft required.
+    sources:
+      - "Lockheed Martin GMLRS programme data"
+      - "Army SAR FY2025"
+
+  Excalibur_M982:
+    display_name: "Excalibur M982 GPS-Guided Artillery Shell (RTX)"
+    tier: PRECISION_STRIKE
+    type: guided_artillery_shell
+    unit_cost: 68000
+    inventory_est: 10000
+    annual_production: 3000
+    time_to_replace_years: 0
+    engagement_range_km: 57
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.04
+    consumption_rates:
+      theater_1: {mean: 50, cv: 0.50}
+      theater_2: {mean: 30, cv: 0.45}
+    theater_correlation: 0.25
+    notes: >
+      GPS-guided 155mm artillery round; fires from existing M109/M777 howitzers.
+      $68K vs $2.1M Tomahawk for comparable precision against fixed targets.
+      High consumption in Ukraine-style sustained artillery operations.
+    sources:
+      - "Raytheon Excalibur programme data"
+      - "Army SAR FY2025"
+
+  Hellfire_R9X:
+    display_name: "AGM-114 Hellfire / R9X (Lockheed)"
+    tier: PRECISION_STRIKE
+    type: air_launched_missile
+    unit_cost: 115000
+    inventory_est: 15000
+    annual_production: 5000
+    time_to_replace_years: 0
+    engagement_range_km: 11
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.02
+    consumption_rates:
+      theater_1: {mean: 40, cv: 0.50}
+      theater_2: {mean: 20, cv: 0.45}
+    theater_correlation: 0.25
+    notes: >
+      Primary rotary-wing precision strike weapon. R9X "ninja missile" variant
+      uses kinetic blades — no warhead explosion — for high-value target elimination.
+      $115K unit cost; widely used in CENTCOM AOR against drone launch sites.
+    sources:
+      - "Lockheed Martin programme data"
+      - "Army/Navy procurement data FY2025"
+
+  LRASM:
+    display_name: "Long Range Anti-Ship Missile LRASM (Lockheed)"
+    tier: PRECISION_STRIKE
+    type: anti_ship_cruise_missile
+    unit_cost: 3000000
+    inventory_est: 450
+    annual_production: 100
+    time_to_replace_years: 2
+    engagement_range_km: 930
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.03
+    consumption_rates:
+      theater_1: {mean: 2, cv: 0.40}
+      theater_2: {mean: 15, cv: 0.50}
+    theater_correlation: 0.30
+    notes: >
+      Stealth anti-ship/land-attack cruise missile. Primary weapon for Indo-Pacific
+      carrier/surface strike. Critical in ASBM-contested environment where
+      surface ships cannot close within Harpoon range. Very limited inventory —
+      the most acute precision strike scarcity after SM-3 IIA.
+    sources:
+      - "USAF/USN SAR FY2025"
+      - "Lockheed Martin programme data"
+
+  # ── TIER: C-UAS KINETIC (EXPANDED) ───────────────────────────────────────
+  Coyote_Block3:
+    display_name: "AeroJet Coyote Block 3 C-UAS (Raytheon/RTX)"
+    tier: ATTRITION_DEFENSE
+    type: c_uas_loitering_interceptor
+    unit_cost: 45000
+    inventory_est: 1000
+    annual_production: 5000
+    time_to_replace_years: 0
+    engagement_range_km: 15
+    intercept_rate_pct: 75
+    quality_tier: HIGH
+    dud_rate: 0.08
+    consumption_rates:
+      theater_1: {mean: 30, cv: 0.60}
+      theater_2: {mean: 60, cv: 0.65}
+    theater_correlation: 0.20
+    notes: >
+      Loitering C-UAS interceptor networked into LIDS (Lower Tier Air and
+      Missile Defense) architecture. Autonomous drone pursuit and kinetic kill.
+      Deployed U.S. Army at multiple Middle East bases 2024-2026.
+      $45K vs $500 FPV = CAR 0.011 (adversary advantage). More capable than
+      STING against swarms but much more expensive per engagement.
+    sources:
+      - "RTX Coyote programme data"
+      - "Army LIDS programme documentation FY2025-2026"
+
+  P1_Sun:
+    display_name: "P1-Sun Air-Launched Drone Interceptor (Ukraine)"
+    tier: ATTRITION_DEFENSE
+    type: c_uas_air_launched_interceptor
+    unit_cost: 3000
+    inventory_est: 500
+    annual_production: 20000
+    time_to_replace_years: 0
+    engagement_range_km: 40
+    intercept_rate_pct: 65
+    quality_tier: MED
+    dud_rate: 0.15
+    consumption_rates:
+      theater_1: {mean: 20, cv: 0.65}
+      theater_2: {mean: 10, cv: 0.60}
+    theater_correlation: 0.20
+    notes: >
+      Air-launched from An-28 "Shahed Hunter" aircraft. Autonomous pursuit
+      intercept of Shaheds. Described by Ukrainian pilots as "cheap air-to-air
+      missile." Confirmed use by U.S. forces in Middle East (CENTCOM 2025-2026).
+      $3K vs $20K Shahed = CAR 6.67 (US advantage). Air-launched — requires
+      aircraft platform; limits ground-based deployment utility.
+    sources:
+      - "Ukrainian MoD operational data"
+      - "CENTCOM Middle East deployment confirmation 2025-2026"
+
+  Merops_AS3:
+    display_name: "Merops AS-3 Surveyor Air-Launched Interceptor (Ukraine)"
+    tier: ATTRITION_DEFENSE
+    type: c_uas_air_launched_interceptor
+    unit_cost: 3500
+    inventory_est: 300
+    annual_production: 10000
+    time_to_replace_years: 0
+    engagement_range_km: 50
+    intercept_rate_pct: 68
+    quality_tier: MED
+    dud_rate: 0.14
+    consumption_rates:
+      theater_1: {mean: 15, cv: 0.65}
+      theater_2: {mean: 8, cv: 0.60}
+    theater_correlation: 0.20
+    notes: >
+      Second Ukrainian An-28-launched interceptor alongside P1-Sun. Longer range
+      (50km) than P1-Sun. Exported/adopted by U.S. forces in Middle East.
+      $3.5K vs $20K Shahed = CAR 5.71 (US advantage).
+    sources:
+      - "Ukrainian MoD operational data"
+      - "CENTCOM Middle East deployment 2025-2026"
+
+  # ── TIER: DIRECTED ENERGY (EXPANDED) ─────────────────────────────────────
+  Leonidas_HPM:
+    display_name: "Leonidas High Power Microwave System (Epirus)"
+    tier: STRUCTURAL_SOLUTION
+    type: directed_energy_hpm
+    unit_cost_per_shot: 0.10
+    system_cost: 16000000
+    inventory_est: 8
+    annual_production_target: 50
+    time_to_replace_years: 2
+    engagement_range_km: 1
+    intercept_rate_pct: 95
+    quality_tier: HIGH
+    dud_rate: 0.01
+    consumption_rates:
+      theater_1: {mean: 0, cv: 0}
+      theater_2: {mean: 0, cv: 0}
+    notes: >
+      High Power Microwave defeats entire drone swarms with single pulse.
+      $0.10/shot (electricity). Effective against electronics in all UAS.
+      USAF AFWERX programme; deployed at Eglin AFB 2025.
+      No moving parts — higher reliability than kinetic interceptors.
+      Range limitation (1km) restricts to terminal/base defense role.
+      Complements Iron Beam (laser, 7km, single targets) with area effect.
+    sources:
+      - "Epirus Leonidas programme data 2025-2026"
+      - "USAF AFWERX deployment documentation"
+
+  THOR_HPM:
+    display_name: "THOR Tactical HPM Operational Responder (AFRL)"
+    tier: STRUCTURAL_SOLUTION
+    type: directed_energy_hpm_tactical
+    unit_cost_per_shot: 0.05
+    system_cost: 18000000
+    inventory_est: 6
+    annual_production_target: 20
+    time_to_replace_years: 2
+    engagement_range_km: 0.5
+    intercept_rate_pct: 92
+    quality_tier: HIGH
+    dud_rate: 0.01
+    consumption_rates:
+      theater_1: {mean: 0, cv: 0}
+      theater_2: {mean: 0, cv: 0}
+    notes: >
+      AFRL counter-swarm HPM system. Briefcase-sized emitter; defeats drone
+      swarms in 360-degree coverage. $0.05/shot. Containerized/deployable.
+      Current inventory 6 systems; very limited production capacity.
+      Complementary to Leonidas at base/FOB protection role.
+    sources:
+      - "AFRL THOR programme documentation 2025"
+      - "USAF Research Lab publication"
+
+  # ── TIER: LOITERING MUNITIONS (EXPANDED) ─────────────────────────────────
+  Switchblade_300:
+    display_name: "Switchblade 300 Loitering Munition (AeroVironment)"
+    tier: ATTRITION_OFFENSE
+    type: loitering_munition_light
+    unit_cost: 6000
+    inventory_est: 20000
+    annual_production: 15000
+    time_to_replace_years: 0
+    engagement_range_km: 15
+    intercept_rate_pct: null
+    quality_tier: MED
+    dud_rate: 0.07
+    consumption_rates:
+      theater_1: {mean: 200, cv: 0.65}
+      theater_2: {mean: 400, cv: 0.70}
+    theater_correlation: 0.25
+    notes: >
+      Man-portable anti-personnel loitering munition. 15-min loiter, 15km range.
+      $6K vs Switchblade 600 ($100K) — covers dismounted infantry threat.
+      High production rate; widely deployed Ukraine and allied forces.
+      Anti-personnel/light vehicle; not effective vs armor.
+    sources:
+      - "AeroVironment programme data"
+      - "CRS IF12611"
+
+  Phoenix_Ghost:
+    display_name: "Phoenix Ghost Loitering Munition (AEVEX/USAF)"
+    tier: ATTRITION_OFFENSE
+    type: loitering_munition_medium
+    unit_cost: 60000
+    inventory_est: 3000
+    annual_production: 2000
+    time_to_replace_years: 0
+    engagement_range_km: 120
+    intercept_rate_pct: null
+    quality_tier: MED
+    dud_rate: 0.08
+    consumption_rates:
+      theater_1: {mean: 20, cv: 0.55}
+      theater_2: {mean: 40, cv: 0.60}
+    theater_correlation: 0.25
+    notes: >
+      USAF-developed loitering munition; extended loiter (6+ hours), day/night ops.
+      Anti-armor capable. $60K unit cost — between Switchblade 300 and 600.
+      Designed for contested environment where FPV drones face EW suppression.
+      Extended loiter enables persistent ISR + strike.
+    sources:
+      - "USAF programme data; first disclosed April 2022"
+      - "DoD Ukraine assistance documentation"
+
+  Altius_600:
+    display_name: "Altius-600 Loitering Munition (Anduril/Area-I)"
+    tier: ATTRITION_OFFENSE
+    type: loitering_munition_multi_role
+    unit_cost: 50000
+    inventory_est: 1000
+    annual_production: 3000
+    time_to_replace_years: 0
+    engagement_range_km: 440
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.05
+    consumption_rates:
+      theater_1: {mean: 10, cv: 0.50}
+      theater_2: {mean: 20, cv: 0.55}
+    theater_correlation: 0.25
+    notes: >
+      Air/tube/surface launched; 440km range. Multiple payload options including
+      kinetic, EW, ISR. Replicator programme candidate. AI-enabled targeting.
+      $50K vs $2.1M Tomahawk for comparable range precision strike = 42:1 cost advantage.
+    sources:
+      - "Anduril/Area-I programme data"
+      - "DIU Replicator programme documentation 2025"
+
+  Hatchet:
+    display_name: "Hatchet Mini-Loitering Munition (Composite Engineering)"
+    tier: ATTRITION_OFFENSE
+    type: loitering_munition_mini
+    unit_cost: 9000
+    inventory_est: 8000
+    annual_production: 10000
+    time_to_replace_years: 0
+    engagement_range_km: 20
+    intercept_rate_pct: null
+    quality_tier: MED
+    dud_rate: 0.09
+    consumption_rates:
+      theater_1: {mean: 150, cv: 0.70}
+      theater_2: {mean: 300, cv: 0.70}
+    theater_correlation: 0.20
+    notes: >
+      Air-launched mini loitering munition; 12 per aircraft station.
+      $9K unit cost enables mass employment from conventional aircraft.
+      Anti-personnel/light vehicle; swarm employment doctrine.
+    sources:
+      - "Composite Engineering programme data"
+      - "DIU CUAS programme documentation"
+
+  MALD_Decoy:
+    display_name: "MALD-J Miniature Air-Launched Decoy Jammer (RTX)"
+    tier: ELECTRONIC_WARFARE
+    type: air_launched_decoy_ew
+    unit_cost: 380000
+    inventory_est: 1200
+    annual_production: 400
+    time_to_replace_years: 0.5
+    engagement_range_km: 900
+    intercept_rate_pct: null
+    quality_tier: HIGH
+    dud_rate: 0.04
+    consumption_rates:
+      theater_1: {mean: 5, cv: 0.40}
+      theater_2: {mean: 15, cv: 0.45}
+    theater_correlation: 0.30
+    notes: >
+      Saturates adversary radar/SAM networks with false targets before real
+      strike package. Multiplies effectiveness of Tomahawk/JASSM by degrading
+      adversary intercept probability. $380K per unit — expensive but force
+      multiplier for the entire precision strike inventory.
+      Not a weapon: a capability enabler counted in strike planning.
+    sources:
+      - "RTX MALD programme data"
+      - "USAF SAR FY2025"

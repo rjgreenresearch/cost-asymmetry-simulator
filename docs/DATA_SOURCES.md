@@ -232,6 +232,25 @@ cross-checked against multiple independent sources.
 | DIU (Defense Innovation Unit) C-UAS briefings (2025–2026) | DroneHunter intercept effectiveness: ~70% vs. Group 1/2 UAS; tactical deployment doctrine; $15K unit cost range |
 | DIU Replicator Programme briefings (2025–2026) | FPV quadcopter cost range ($400–$2,000); Group 1 UAS doctrine; mass-production quality risks |
 
+**CORRECTION — DroneHunter unit cost (updated April 2026):**
+The original $15,000 unit cost figure for DroneHunter was sourced from U.S. DIU
+procurement estimates for Dedrone and Skydio platforms. Primary-source research
+identifies three Ukrainian combat-proven drone-hunting systems at materially
+lower costs:
+
+- **STING** (Wild Hornets): ~$2,500. FPV collision intercept. 25km range. 1,000+
+  Shahed kills in first four months. 360° antenna, EW-resistant, night-capable.
+- **General Cherry interceptors**: $1,000–$2,275. ~1,000/day production rate.
+- **P1-Sun / Merops AS-3**: Air-launched variants; cost not publicly stated.
+  Used by U.S. forces in Middle East (CENTCOM 2025–2026).
+
+The simulator's DroneHunter entry has been corrected to $2,500 (STING baseline).
+This changes the Shahed-vs-DroneHunter CAR from 1.33 to **8.0** — shifting the
+pairing from US_ADVANTAGE to a significantly stronger US_ADVANTAGE. The FPV-vs-
+DroneHunter CAR improves from 0.033 to **0.20** — still adversary advantage but
+six times more favorable than the previous estimate. DroneHunter now appears at
+the top of the marginal value ranking alongside DroneRound 556 at ∞ days/$100M.
+
 **Critical caveat on dud rate data:** The 20–35% Shahed failure rate is derived
 from Ukrainian MoD and independent OSINT tracking and reflects the entire failure
 mode spectrum (navigation failure, structural failure, Ukrainian electronic warfare,
