@@ -8,7 +8,7 @@ This is a companion analysis product developed with the research paper [The Cost
 
 ## Key Findings — Canonical Run
 
-**Run:** `run_20260430_160009` | **N =** 10,000 | **Seed =** 20260428  
+**Run:** `run_20260430_183328` | **N =** 10,000 | **Seed =** 20260428  
 **Database:** 37 weapon systems | 12 threat systems | 90-day two-war horizon
 
 ### Depletion Results
@@ -94,7 +94,7 @@ python -m cas --n-sims 10000 --report html,json
 To reproduce canonical results:
 ```bash
 python -m cas --n-sims 10000 --report html,json
-# run_id: run_20260430_160009 | seed: 20260428
+# run_id: run_20260430_183328 | seed: 20260428
 ```
 
 ## Database
